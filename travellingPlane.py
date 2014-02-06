@@ -1,6 +1,6 @@
 from shared import *
 from routeOptions import RouteOptions
-
+from itertools import permutations
 import numpy
 
 class TravellingPlane():
@@ -13,33 +13,25 @@ class TravellingPlane():
 		self.numberNodes = len(nodes)
 
 		self.setEnergyMatrix()
-		self.setRouteOptions()
 		
 	def getOrder(self):
 		"selects the shortest route given the routes provided"
 
-		routeOptions = self.routeOptions
-		numberRouteOptions = len(routeOptions)
+		numberNodes = self.numberNodes
+		nodeIndexs = range(0,numberNodes)
 
-		index,total = 0,10
-		progress = [int(i*numberRouteOptions/total) for i in range(total)]
+		bestRoute = nodeIndexs
+		bestCost = self.calculateRouteCost(nodeIndexs)
 
-		for i,route in enumerate(routeOptions):
+		for i,route in enumerate(permutations(nodeIndexs)):
+
 			cost = self.calculateRouteCost(route)
-
-			if (i == 0):
-				bestRoute = route
-				bestCost = cost
 
 			if (cost<bestCost):
 				bestRoute = route
 				bestCost = cost
 
-			if (i in progress):
-				print("{0:02d}/{1:02d} - {2:s}".format(index,total,bestRoute))
-				index += 1
-
-		print("{0:02d}/{1:02d} - {2:s}".format(10,10,bestRoute))
+		print("{}".format(bestRoute))
 
 		return bestRoute
 
@@ -55,11 +47,6 @@ class TravellingPlane():
 
 		cost.append(self.energyMatrix[route[-1]][route[0]])
 		return sum(cost)
-
-	def setRouteOptions(self):
-		"sets the differnt routes that are avialable given then number of nodes"
-
-		self.routeOptions = RouteOptions(self.numberNodes).getRoute()
 
 	def setEnergyMatrix(self):
 		"returns a matrix of energy costs to navigate the given node locations"
