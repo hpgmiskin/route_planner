@@ -11,7 +11,7 @@ class RouteOptions(object):
 		self.routeCount = 0
 		self.maxRouteCount = factorial(N)
 
-		print("there will be {} route combinations".format(self.maxRouteCount))
+		print("{} route combinations:".format(self.maxRouteCount))
 	
 	def setRoute(self,nodes):
 		"function to itterate through the nodes"

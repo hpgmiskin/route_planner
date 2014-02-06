@@ -11,7 +11,6 @@ class ManageData():
 
 		if update:
 			self.updateData()
-			self.loadData(MATLAB_OUTPUT_FILEPATH)
 
 	def updateData(self):
 		"""function to run the required matlab script that updates all required data
@@ -25,7 +24,7 @@ class ManageData():
 
 		subprocess.check_call(['matlab', '-wait', '-automation', '-nosplash', '-noFigureWindows', '-r', matlabCommand])
 
-	def loadData(self,filePath):
+	def loadData(self,filePath=MATLAB_OUTPUT_FILEPATH):
 		"function to load the data created by MATLAB"
 
 		nodes = []

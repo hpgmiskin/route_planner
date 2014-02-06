@@ -9,15 +9,20 @@ class TravellingPlane():
 	def __init__(self, nodes):
 		"initiates the travelling plane with the node location by defining the nergy matrix"
 
-		numberNodes = len(nodes)
+		self.nodes = nodes
+		self.numberNodes = len(nodes)
 
-		self.setEnergyMatrix(nodes)
-		self.setRouteOptions(numberNodes)
+		self.setEnergyMatrix()
+		self.setRouteOptions()
 		
 	def getOrder(self):
 		"selects the shortest route given the routes provided"
 
 		routeOptions = self.routeOptions
+		numberRouteOptions = len(routeOptions)
+
+		index,total = 0,10
+		progress = [int(i*numberRouteOptions/total) for i in range(total)]
 
 		for i,route in enumerate(routeOptions):
 			cost = self.calculateRouteCost(route)
@@ -30,10 +35,11 @@ class TravellingPlane():
 				bestRoute = route
 				bestCost = cost
 
-			if ((i/1000) == (i//1000)):
-				print("{}/{}".format(i,len(routeOptions)))
+			if (i in progress):
+				print("{0:02d}/{1:02d} - {2:s}".format(index,total,bestRoute))
+				index += 1
 
-		print("Route {} seleted at cost of {}".format(bestRoute,bestCost))
+		print("{0:02d}/{1:02d} - {2:s}".format(10,10,bestRoute))
 
 		return bestRoute
 
@@ -50,25 +56,29 @@ class TravellingPlane():
 		cost.append(self.energyMatrix[route[-1]][route[0]])
 		return sum(cost)
 
-	def setRouteOptions(self,numberNodes):
+	def setRouteOptions(self):
 		"sets the differnt routes that are avialable given then number of nodes"
 
-		self.routeOptions = RouteOptions(numberNodes).getRoute()
+		self.routeOptions = RouteOptions(self.numberNodes).getRoute()
 
-	def setEnergyMatrix(self,nodes):
+	def setEnergyMatrix(self):
 		"returns a matrix of energy costs to navigate the given node locations"
 
 		#number of nodes
-		N = len(nodes)
-		print(nodes)
+		nodes = self.nodes
+		numberNodes = self.numberNodes
 
-		energyMatrix = numpy.zeros([N,N])
+		energyMatrix = numpy.zeros([numberNodes,numberNodes])
 
-		for i in range(N):
-			for j in range(N):
+		for i in range(numberNodes):
+			for j in range(numberNodes):
 				deltaX = nodes[j][0]-nodes[i][0]
 				deltaY = nodes[j][1]-nodes[i][1]
 				deltaZ = nodes[j][2]-nodes[i][2]
 				energyMatrix[i][j] = calculateEnergy(deltaX,deltaY,deltaZ)
 
 		self.energyMatrix = energyMatrix
+
+if __name__ == "__main__":
+	travellingPlane = TravellingPlane([[0,0,0],[0,1,1],[0,1,0],[0,0,1]])
+	travellingPlane.getOrder()

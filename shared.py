@@ -86,9 +86,8 @@ def plotFigure(filename,inputData):
 
     x,y,z = inputData[0],inputData[1],inputData[2]
     
-    ax.plot(x, y, z, label="")
+    ax.plot(x, y, z, label=filename)
     ax.legend()
-    
-    pyplot.show()
 
-    pyplot.savefig(filename)
+    fig.show()
+    fig.savefig(filename+".png")
