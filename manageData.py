@@ -1,34 +1,17 @@
 import os,sys,csv,subprocess,math,operator
 from shared import *
 
-def getGraphLogicPath():
-	"function to return the graph_logic path"
-
-	cwd = os.getcwd()
-	rootPath = os.path.dirname(cwd)
-	newPath = os.path.join(rootPath,"graph_logic")
-
-	return newPath
-
-sys.path.insert(0, getGraphLogicPath())
-
 MATLAB_FILEPATH = "matlab/update_data"
 MATLAB_OUTPUT_FILEPATH = "matlab/matlab_output.csv"
 
-class manageData():
+class ManageData():
 	"""docstring for Data"""
 
-	def __init__(self,filePath,inputData=None):
+	def __init__(self,update=False):
 
-		self.filePath = filePath
-
-		if inputData:
-			self.setData(inputData)
-		else:
-			self.loadData()
-
-		self.setCentre()
-		self.sortData()
+		if update:
+			self.updateData()
+			self.loadData(MATLAB_OUTPUT_FILEPATH)
 
 	def updateData(self):
 		"""function to run the required matlab script that updates all required data
@@ -42,41 +25,40 @@ class manageData():
 
 		subprocess.check_call(['matlab', '-wait', '-automation', '-nosplash', '-noFigureWindows', '-r', matlabCommand])
 
-	def loadData(self):
+	def loadData(self,filePath):
 		"function to load the data created by MATLAB"
 
-		data = []
-		filePath = self.filePath
+		nodes = []
 		with open(filePath,"r") as csvFile:
 			csvReader = csv.reader(csvFile,dialect="excel")
 			for row in csvReader:
-				data.append([float(item) for item in row])
+				node = [float(item) for item in row[:3] if len(item)>0]
+				if (len(node) == 3):
+					nodes.append(node)
 
-		self.xyz = changeArray(data)
+		self.nodes = nodes
 
-	def sortData(self):
+	def sortData(self,sortFunction):
 		"""method to sort cylindrical coordinates using travelling salesman"""
 
-		rtz = self.rtz
-		r,t,z = rtz[0],rtz[1],rtz[2]
-		length = range(min(len(r),len(t),len(z)))
+		nodes = self.nodes
+		order = sortFunction(nodes).getOrder()
 
-		nodes = [(r[i],t[i],z[i]) for i in length]
-		#print(nodes)
-		#order = travellingSalesman(nodes,"rtz")
-		order = travellingPlane(nodes)
-		#print(order)
+		sortedNodes = []
+		for index in order:
+			sortedNodes.append(nodes[index])
 
-		#print(order)
+		sortedNodes.append(nodes[order[0]])
 
-		newR,newT,newZ = [],[],[]
+		self.nodes = sortedNodes
 
-		for i in range(len(order)):
-			index = int(order[i]) - 1
-			#print(index)
+	def plotData(self,filename):
+		"method to plot the data"
 
-			newR.append(r[index])
-			newT.append(t[index])
-			newZ.append(z[index])
+		nodes = self.nodes
+		plotData = changeArray(nodes)
+		plotFigure(filename,plotData)
 
-		self.rtz = [newR,newT,newZ]
+if __name__ == "__main__":
+	manageData = ManageData()
+	manageData.loadData("matlab/test.csv")

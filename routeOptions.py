@@ -46,12 +46,11 @@ class RouteOptions(object):
 	def getRoute(self):
 		"function to return the route"
 
-		nodes = list(range(1,self.N+1))
+		nodes = list(range(0,self.N))
 		self.setRoute(nodes)
 		self.cleanRoute()
 
 		return self.route
 
 if __name__ == "__main__":
-	Route5 = RouteOptions(5)
-	route5 = Route5.getRoute()
+	route5 = RouteOptions(5).getRoute()

@@ -1,7 +1,12 @@
-import math,operator
+import numpy,math,operator
+
+import matplotlib
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as pyplot
 
 DEBUG = False
-G = 9.81
+gravity = 9.81
+mass = 10
 
 def factorial(n):
     "function to return the factorial of a number"
@@ -56,3 +61,34 @@ def sortListOfTuples(listOfTuples,index=2,change=False):
         listOfTuples = changeArray(listOfTuples)
 
     return listOfTuples
+
+def calculateEnergy(deltaX,deltaY,deltaZ):
+    "calculates and returns the energy required to travel between two points"
+
+    def dragForce(velocity):
+        "returns the drag force of a standard UAV given the velocity"
+        return velocity*11/14
+
+    distance = sum([deltaX**2,deltaY**2,deltaZ**2])**0.5
+    dragEnergy = distance*dragForce(10)
+    gravityEnergy = mass*gravity*deltaZ
+    totalEnergy = dragEnergy + gravityEnergy
+
+    return max([0,totalEnergy])
+
+def plotFigure(filename,inputData):
+    "method to plot the class data and if DEBUG = False save the figure"
+
+    matplotlib.rcParams['legend.fontsize'] = 10
+
+    fig = pyplot.figure()
+    ax = fig.gca(projection='3d')
+
+    x,y,z = inputData[0],inputData[1],inputData[2]
+    
+    ax.plot(x, y, z, label="")
+    ax.legend()
+    
+    pyplot.show()
+
+    pyplot.savefig(filename)
