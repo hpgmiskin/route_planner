@@ -1,8 +1,8 @@
 import os,sys,csv,subprocess,math,operator
 from shared import *
 
-MATLAB_FILEPATH = "matlab/update_data"
-MATLAB_OUTPUT_FILEPATH = "matlab/matlab_output.csv"
+MATLAB_FILEPATH = "update_data.m"
+MATLAB_OUTPUT_FILEPATH = "matlab_output.csv"
 
 class ManageData():
 	"""docstring for Data"""
@@ -12,13 +12,20 @@ class ManageData():
 		if update:
 			self.updateData()
 
-	def updateData(self):
+	def updateData(self,numberPoints=10):
 		"""function to run the required matlab script that updates all required data
 
 		assumes that the function to update matlab is stored in a folder called matlab of current directory
 		"""
 
-		filePath = MATLAB_FILEPATH
+		fileContents = ""
+		fileContents+="output = bestlh({},3,1,1);\n".format(numberPoints)
+		fileContents+="csvwrite('{}',output);".format(MATLAB_OUTPUT_FILEPATH)
+
+		with open("matlab/"+MATLAB_FILEPATH,"w") as openFile:
+			openFile.write(fileContents)
+
+		filePath = "matlab/"+MATLAB_FILEPATH
 		currentDirectory = os.getcwd()
 		matlabCommand = 'cd {}, run {}, exit'.format(currentDirectory,filePath)
 
@@ -26,6 +33,8 @@ class ManageData():
 
 	def loadData(self,filePath=MATLAB_OUTPUT_FILEPATH):
 		"function to load the data created by MATLAB"
+
+		filePath = "matlab/"+filePath
 
 		nodes = []
 		with open(filePath,"r") as csvFile:
@@ -41,22 +50,24 @@ class ManageData():
 		"""method to sort cylindrical coordinates using travelling salesman"""
 
 		nodes = self.nodes
-		order = sortFunction(nodes).getOrder()
+
+		sortFunction.setNodes(nodes,3)
+		order = sortFunction.getOrder()
 
 		sortedNodes = []
 		for index in order:
 			sortedNodes.append(nodes[index])
 
-		sortedNodes.append(nodes[order[0]])
+		#sortedNodes.append(nodes[order[0]])
 
 		self.nodes = sortedNodes
 
-	def plotData(self,filename):
+	def plotData(self,filename=""):
 		"method to plot the data"
 
 		nodes = self.nodes
 		plotData = changeArray(nodes)
-		plotFigure(filename,plotData)
+		plotFigure(filename,plotData,True)
 
 if __name__ == "__main__":
 	manageData = ManageData()

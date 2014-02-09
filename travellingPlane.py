@@ -1,29 +1,56 @@
 from shared import *
-from routeOptions import RouteOptions
-from itertools import permutations
+from greedyTSP import *
+import itertools
 import numpy
 
 class TravellingPlane():
 	"""travellingPlane is used to calculate the optimum ordering of points given the node locations"""
 	
-	def __init__(self, nodes):
-		"initiates the travelling plane with the node location by defining the nergy matrix"
+	def __init__(self, orderType):
+		"initiates the travelling plane with the node location by defining the energy matrix"
+
+		self.orderType = orderType
+
+	def setNodes(self,nodes,startNode=None):
+		"sets the position of the nodes that travelling plane routes around and define the energy matrix"
 
 		self.nodes = nodes
+		self.startNode=startNode
 		self.numberNodes = len(nodes)
-
 		self.setEnergyMatrix()
+
+	def getOrder(self,orderType=None):
+		"returns the order of the nodes using the required function"
+
+		if (orderType):
+			self.orderType = orderType
+
+		orderType = self.orderType
+
+		if (orderType == "exact"):
+			return self.exactOrder()
+		elif (orderType == "greedy"):
+			return self.greedyOrder()
+		else:
+			return None
 		
-	def getOrder(self):
+	def exactOrder(self):
 		"selects the shortest route given the routes provided"
 
 		numberNodes = self.numberNodes
-		nodeIndexs = range(0,numberNodes)
+		startNode = self.startNode
+		nodeIndexs = list(range(0,numberNodes))
 
 		bestRoute = nodeIndexs
 		bestCost = self.calculateRouteCost(nodeIndexs)
 
-		for i,route in enumerate(permutations(nodeIndexs)):
+		for i,route in enumerate(itertools.permutations(nodeIndexs)):
+
+			if (startNode != None):
+				if (route[0] == startNode):
+					pass
+				else:
+					continue
 
 			cost = self.calculateRouteCost(route)
 
@@ -31,8 +58,24 @@ class TravellingPlane():
 				bestRoute = route
 				bestCost = cost
 
-		print("{}".format(bestRoute))
+		print("Exact - {} - {}".format(bestRoute,bestCost))
+		return bestRoute
 
+	def greedyOrder(self):
+		"method to return the order given the greedyTSP"
+
+		energyMatrix = self.energyMatrix
+		startNode = self.startNode
+
+		if False:#(startNode != None):
+			print("greedy remove node {}".format(startNode))
+			energyMatrix = numpy.delete(energyMatrix, (startNode), axis=0)
+			energyMatrix = numpy.delete(energyMatrix,(startNode), axis=1)
+
+		bestRoute = solve_tsp_numpy(energyMatrix,3)
+		bestCost = self.calculateRouteCost(bestRoute)
+
+		print("Greedy - {} - {}".format(bestRoute,bestCost))
 		return bestRoute
 
 	def calculateRouteCost(self,route):

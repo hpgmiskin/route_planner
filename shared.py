@@ -76,7 +76,7 @@ def calculateEnergy(deltaX,deltaY,deltaZ):
 
     return max([0,totalEnergy])
 
-def plotFigure(filename,inputData):
+def plotFigure(filename,plotData,show=True):
     "method to plot the class data and if DEBUG = False save the figure"
 
     matplotlib.rcParams['legend.fontsize'] = 10
@@ -84,10 +84,13 @@ def plotFigure(filename,inputData):
     fig = pyplot.figure()
     ax = fig.gca(projection='3d')
 
-    x,y,z = inputData[0],inputData[1],inputData[2]
+    x,y,z = plotData[0],plotData[1],plotData[2]
     
     ax.plot(x, y, z, label=filename)
     ax.legend()
 
-    fig.show()
-    fig.savefig(filename+".png")
+    if show:
+        fig.show()
+    else:
+        fig.savefig(filename+".png")
+    
