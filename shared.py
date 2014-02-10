@@ -78,7 +78,7 @@ def calculateEnergy(deltaX,deltaY,deltaZ):
 
 def permutation(nodes,nodeA=None,nodeB=None):
     """function to display the possible permutation sets for 2 routes
-    starting at node index nodeA and node index nodeB in set of N total nodes"""
+    starting at node index nodeA and node index nodeB in set nodes"""
 
     N = len(nodes)
 
@@ -122,12 +122,29 @@ def permutation(nodes,nodeA=None,nodeB=None):
 
     return permutations
 
-def plotFigure(filename,plotData,show=True):
+
+def plot2dFigure(filename,xAxis,yAxis,xLabel="",yLabel="",show=True):
+    "method to plot the class data and if DEBUG = False save the figure"
+
+    pyplot.figure(num=filename)
+    pyplot.hold(True)
+    pyplot.title(filename)
+
+    for name,data in yAxis.items():
+        pyplot.plot(xAxis[:len(data)],data,label=name)
+
+    pyplot.xlabel(xLabel)
+    pyplot.ylabel(yLabel)
+    pyplot.legend()
+
+    pyplot.show()
+
+def plot3dFigure(filename,plotData,show=True):
     "method to plot the class data and if DEBUG = False save the figure"
 
     matplotlib.rcParams['legend.fontsize'] = 10
 
-    fig = pyplot.figure()
+    fig = pyplot.figure(num=filename)
     ax = fig.gca(projection='3d')
 
     x,y,z = plotData[0],plotData[1],plotData[2]

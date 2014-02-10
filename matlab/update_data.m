@@ -1,2 +1,2 @@
-output = bestlh(1000,3,1,1);
-csvwrite('matlab_output_1000.csv',output);
+output = bestlh(100,3,1,1);
+csvwrite('matlab_output_100.csv',output);

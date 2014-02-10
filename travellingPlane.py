@@ -71,10 +71,11 @@ class TravellingPlane():
 			#calculate all possible route combinations
 			possibleRoutes = permutation(currentIndexs,nodeA,nodeB)
 			
+			#print(possibleRoutes)
 			bestRoute = possibleRoutes[0]
 			bestCost = 1000000
 
-			#for all possible routes check if leat cost
+			#for all possible routes check if least cost
 			for route in possibleRoutes:
 
 				costA = self.calculateRouteCost([i for i in route[0]]+[highestIndex])
@@ -97,14 +98,14 @@ class TravellingPlane():
 		bestCost = self.calculateRouteCost(bestRoute)
 
 		print("Progressive - {} - {:.2f}".format(bestRoute[:10],bestCost))
-		return bestRoute
+		return bestRoute,bestCost
 
 
 	def exactOrder(self):
 		"method that considers all combinations of the given route to find the optimum"
 
 		numberNodes = self.numberNodes
-		startNode = self.startNode
+		#startNode = self.startNode
 		nodeIndexs = list(range(0,numberNodes))
 
 		bestRoute = nodeIndexs
@@ -112,11 +113,11 @@ class TravellingPlane():
 
 		for i,route in enumerate(itertools.permutations(nodeIndexs)):
 
-			if (startNode != None):
-				if (route[0] == startNode):
-					pass
-				else:
-					continue
+			# if (startNode != None):
+			# 	if (route[0] == startNode):
+			# 		pass
+			# 	else:
+			# 		continue
 
 			cost = self.calculateRouteCost(route)
 
@@ -125,24 +126,18 @@ class TravellingPlane():
 				bestCost = cost
 
 		print("Exact - {} - {:.2f}".format(bestRoute[:10],bestCost))
-		return bestRoute
+		return bestRoute,bestCost
 
 	def greedyOrder(self):
 		"method to find a best guess route using a suboptimal greedy travelling salesman"
 
 		energyMatrix = self.energyMatrix
-		startNode = self.startNode
-
-		if False:#(startNode != None):
-			print("greedy remove node {}".format(startNode))
-			energyMatrix = numpy.delete(energyMatrix, (startNode), axis=0)
-			energyMatrix = numpy.delete(energyMatrix,(startNode), axis=1)
 
 		bestRoute = solve_tsp_numpy(energyMatrix,3)
 		bestCost = self.calculateRouteCost(bestRoute)
 
 		print("Greedy - {} - {:.2f}".format(bestRoute[:10],bestCost))
-		return bestRoute
+		return bestRoute,bestCost
 
 	def calculateRouteCost(self,route):
 		"calculates the cost of a route given a route (ordering of nodes)"

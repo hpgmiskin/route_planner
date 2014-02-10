@@ -1,36 +1,32 @@
-import shared
+from shared import *
 
 from manageData import ManageData
 from travellingPlane import TravellingPlane
 
 manageData = ManageData()
-numberPoints = [6,10,20,100,200,1000]
 
-#manageData.updateData(numberPoints)
+numberPoints = [10,20,30,40,50,60,70,80,100]
+#numberPoints = [10,20,40,80,160,320,640,1280]
+costs = {"progressive":[],"greedy":[]}
+
 for n in numberPoints:
-	print(n)
 
-	name = "test_"+str(n)
+	name = "{}_nodes".format(n)
+	print(name)
+	manageData.updateData(n)
 
-	sort = "progressive"
-	manageData.loadData(n)
-	manageData.sortData(TravellingPlane(sort))
-	manageData.plotData(name+"_"+sort)
+	for sort in ["progressive","greedy"]:
 
-	sort = "greedy"
-	manageData.loadData(n)
-	manageData.sortData(TravellingPlane(sort))
-	manageData.plotData(name+"_"+sort)
-
-	if (n<=10):
-		sort = "exact"
 		manageData.loadData(n)
-		manageData.sortData(TravellingPlane(sort))
+		cost = manageData.sortData(TravellingPlane(sort))
 		manageData.plotData(name+"_"+sort)
 
-"""
-for name in ["tour_test_1","tour_test_2","matlab_output_10","matlab_output_100","matlab_output_200"]:
-	manageData.loadData("matlab/{}.csv".format(name))
-	manageData.sortData(TravellingPlane("greedy"))
-	manageData.plotData(name)
-"""
+		costs[sort].append(cost)
+
+xLabel = "Number of Points"
+xAxis = numberPoints
+
+yLabel = "Energy Cost of Route"
+yAxis = {"Progressive TSP":costs["progressive"],"Greedy TSP":costs["greedy"]}
+
+plot2dFigure("progressive_greedy_costs",xAxis,yAxis,xLabel,yLabel)

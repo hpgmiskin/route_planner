@@ -51,23 +51,25 @@ class ManageData():
 
 		nodes = self.nodes
 
-		sortFunction.setNodes(nodes,3)
-		order = sortFunction.getOrder()
+		sortFunction.setNodes(nodes)
+		order,cost = sortFunction.getOrder()
 
 		sortedNodes = []
 		for index in order:
 			sortedNodes.append(nodes[index])
 
-		#sortedNodes.append(nodes[order[0]])
+		sortedNodes.append(nodes[order[0]])
 
 		self.nodes = sortedNodes
+
+		return cost
 
 	def plotData(self,filename=""):
 		"method to plot the data"
 
 		nodes = self.nodes
 		plotData = changeArray(nodes)
-		plotFigure(filename,plotData,True)
+		plot3dFigure(filename,plotData,True)
 
 if __name__ == "__main__":
 	manageData = ManageData()
