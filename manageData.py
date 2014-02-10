@@ -2,7 +2,7 @@ import os,sys,csv,subprocess,math,operator
 from shared import *
 
 MATLAB_FILEPATH = "update_data.m"
-MATLAB_OUTPUT_FILEPATH = "matlab_output.csv"
+MATLAB_OUTPUT_FILEPATH = "matlab_output"
 
 class ManageData():
 	"""docstring for Data"""
@@ -20,7 +20,7 @@ class ManageData():
 
 		fileContents = ""
 		fileContents+="output = bestlh({},3,1,1);\n".format(numberPoints)
-		fileContents+="csvwrite('{}',output);".format(MATLAB_OUTPUT_FILEPATH)
+		fileContents+="csvwrite('{}_{}.csv',output);".format(MATLAB_OUTPUT_FILEPATH,numberPoints)
 
 		with open("matlab/"+MATLAB_FILEPATH,"w") as openFile:
 			openFile.write(fileContents)
@@ -31,10 +31,10 @@ class ManageData():
 
 		subprocess.check_call(['matlab', '-wait', '-automation', '-nosplash', '-noFigureWindows', '-r', matlabCommand])
 
-	def loadData(self,filePath=MATLAB_OUTPUT_FILEPATH):
+	def loadData(self,numberPoints=10):
 		"function to load the data created by MATLAB"
 
-		filePath = "matlab/"+filePath
+		filePath = "matlab/{}_{}.csv".format(MATLAB_OUTPUT_FILEPATH,numberPoints)
 
 		nodes = []
 		with open(filePath,"r") as csvFile:

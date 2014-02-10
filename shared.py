@@ -1,4 +1,4 @@
-import numpy,math,operator
+import numpy,math,operator,itertools
 
 import matplotlib
 from mpl_toolkits.mplot3d import Axes3D
@@ -75,6 +75,52 @@ def calculateEnergy(deltaX,deltaY,deltaZ):
     totalEnergy = dragEnergy + gravityEnergy
 
     return max([0,totalEnergy])
+
+def permutation(nodes,nodeA=None,nodeB=None):
+    """function to display the possible permutation sets for 2 routes
+    starting at node index nodeA and node index nodeB in set of N total nodes"""
+
+    N = len(nodes)
+
+    if (N%2 != 0):
+        raise ValueError("N needs to be an even number of nodes") 
+    routeLength = N//2
+
+    permutationA=[]
+    permutationB=[]
+
+    for item in itertools.permutations(nodes,routeLength):
+
+        if ((nodeA == item[0]) or (nodeA == None)):
+            permutationA.append(item)
+        elif ((nodeB == item[0]) or (nodeB == None)):
+            permutationB.append(item)
+
+    #print(permutationA)
+    #print(permutationB)
+
+    def checkRoutes(routeA,routeB):
+        """checks the given routes to see if any nodes are repeated
+
+        returns True if exclusive
+        returns False if any repetition
+        """
+
+        for node in routeA:
+            if (node in routeB):
+                return False
+
+        return True
+
+    permutations = []
+
+    for routeA in permutationA:
+        for routeB in permutationB:
+
+            if checkRoutes(routeA,routeB):
+                permutations.append([routeA,routeB])
+
+    return permutations
 
 def plotFigure(filename,plotData,show=True):
     "method to plot the class data and if DEBUG = False save the figure"

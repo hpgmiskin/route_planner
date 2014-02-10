@@ -31,11 +31,77 @@ class TravellingPlane():
 			return self.exactOrder()
 		elif (orderType == "greedy"):
 			return self.greedyOrder()
+		elif (orderType == "progressive"):
+			return self.progressiveOrder()
 		else:
 			return None
-		
+
+	def progressiveOrder(self):
+		"method to progressively work through the data set to plot an optimal path"
+
+		N=8
+
+		nodes = self.nodes
+		numberNodes = self.numberNodes
+
+		#define list of nodes sorted by vertical location
+		sortedIndexs = sorted(list(range(len(nodes))), key = lambda x:nodes[x][2])
+
+		#assign start and end points for total route
+		routeA = [sortedIndexs[0]]
+		routeB = [sortedIndexs[1]]
+
+		#work through dataset
+		for i in range(0,numberNodes,2):
+
+			nodeA = routeA[-1]
+			nodeB = routeB[-1]
+
+			#consider nodes above current
+			currentIndexs = sortedIndexs[:i+N]
+
+			#remove nodes already in route
+			for node in routeA[:-1]:
+				currentIndexs.remove(node)
+			for node in routeB[:-1]:
+				currentIndexs.remove(node)
+
+			highestIndex = sorted(currentIndexs, key=lambda x:nodes[x][2])[-1]
+
+			#calculate all possible route combinations
+			possibleRoutes = permutation(currentIndexs,nodeA,nodeB)
+			
+			bestRoute = possibleRoutes[0]
+			bestCost = 1000000
+
+			#for all possible routes check if leat cost
+			for route in possibleRoutes:
+
+				costA = self.calculateRouteCost([i for i in route[0]]+[highestIndex])
+				costB = self.calculateRouteCost([i for i in route[1]]+[highestIndex])
+
+				cost = sum([costA,costB])
+
+				if (cost<bestCost):
+					bestRoute = route
+					bestCost = cost
+
+			bestRouteA,bestRouteB = bestRoute
+
+			if (max([len(bestRouteA),len(bestRouteB)])>1):
+				routeA.append(bestRouteA[1])
+				routeB.append(bestRouteB[1])
+
+		routeB.reverse()
+		bestRoute = routeA+routeB
+		bestCost = self.calculateRouteCost(bestRoute)
+
+		print("Progressive - {} - {:.2f}".format(bestRoute[:10],bestCost))
+		return bestRoute
+
+
 	def exactOrder(self):
-		"selects the shortest route given the routes provided"
+		"method that considers all combinations of the given route to find the optimum"
 
 		numberNodes = self.numberNodes
 		startNode = self.startNode
@@ -58,11 +124,11 @@ class TravellingPlane():
 				bestRoute = route
 				bestCost = cost
 
-		print("Exact - {} - {}".format(bestRoute,bestCost))
+		print("Exact - {} - {:.2f}".format(bestRoute[:10],bestCost))
 		return bestRoute
 
 	def greedyOrder(self):
-		"method to return the order given the greedyTSP"
+		"method to find a best guess route using a suboptimal greedy travelling salesman"
 
 		energyMatrix = self.energyMatrix
 		startNode = self.startNode
@@ -75,7 +141,7 @@ class TravellingPlane():
 		bestRoute = solve_tsp_numpy(energyMatrix,3)
 		bestCost = self.calculateRouteCost(bestRoute)
 
-		print("Greedy - {} - {}".format(bestRoute,bestCost))
+		print("Greedy - {} - {:.2f}".format(bestRoute[:10],bestCost))
 		return bestRoute
 
 	def calculateRouteCost(self,route):
