@@ -13,7 +13,7 @@ for n in numberPoints:
 
 	name = "{}_nodes".format(n)
 	print(name)
-	manageData.updateData(n)
+	#manageData.updateData(n)
 
 	for sort in ["progressive","greedy"]:
 
