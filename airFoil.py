@@ -11,24 +11,43 @@ class AirFoil():
 		self.AoAs = []
 		self.CDs = []
 		self.CLs = []
+		self.CLCDs = []
 		
 		self.setFoilData(foilName,reynoldsNumber)
+		
+	def getIndex(self,alpha):
+		"returns the index of the value where alpha is closest to the angle of attack"
+
+		difference = [abs(AoA-alpha) for AoA in self.AoAs]
+		minimumDifference = min(difference)
+
+		#check if angle of attack is not close enough to the lookup value
+		if (minimumDifference > 1):
+			raise ValueError("This angle of attack would induce stall")
+
+		index = difference.index(minimumDifference)
+
+		return index
 
 	def getCL(self,alpha):
 		"returns the closes approximation of the coeficient of lift given the angle of attack alpha"
 
-		difference = [abs(AoA-alpha) for AoA in self.AoAs]
-		minimumIndex = difference.index(min(difference))
-
-		return self.CLs[minimumIndex]
+		return self.CLs[self.getIndex(alpha)]
 
 	def getCD(self,alpha):
 		"returns the closes approximation of the coeficient of drag given the angle of attack alpha"
 
-		difference = [abs(AoA-alpha) for AoA in self.AoAs]
-		minimumIndex = difference.index(min(difference))
+		return self.CDs[self.getIndex(alpha)]
 
-		return self.CDs[minimumIndex]
+	def getEfficiency(self,alpha):
+		"returns the closest approximation of the efficiency given the angle of attack alpha"
+
+		return self.CLCDs[self.getIndex(alpha)]
+
+	def setEfficiency(self):
+		"sets the efficiency of the airfoil for diffrent angles of attack where efficiency = CL/CD"
+
+		self.CLCDs = [self.CLs[i]/self.CDs[i] for i in range(min([len(self.CLs),len(self.CDs)]))]
 
 	def setFoilData(self,foilName,reynoldsNumber):
 		"returns a dictionary of the airfoils lift and drag coeficients at differnt angles of attack"
@@ -58,6 +77,7 @@ class AirFoil():
 		for row in content:
 			row = str(row)
 			rowList = re.split(r'\s*',row)
+			#print(row)
 
 			if (record and ("--" not in row)):
 				self.AoAs.append(float(rowList[1]))
@@ -67,6 +87,10 @@ class AirFoil():
 			if (("alpha" == rowList[1]) and ("CL" == rowList[2]) and ("CD" == rowList[3])):
 				record = True
 
+		self.setEfficiency()
+
 if __name__ == "__main__":
 	airFoil = AirFoil("naca23015-il",100000)
-	print(airFoil.getCD(8.25))
+
+	for alpha in [-8,-6,-4,-2,0,2,4,6,8]:
+		print(airFoil.getEfficiency(alpha))

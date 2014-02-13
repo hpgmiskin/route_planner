@@ -126,7 +126,7 @@ def permutation(nodes,nodeA=None,nodeB=None):
 def plot2dFigure(filename,xAxis,yAxis,xLabel="",yLabel="",show=True):
     "method to plot the class data and if DEBUG = False save the figure"
 
-    pyplot.figure(num=filename)
+    #pyplot.figure(num=filename)
     pyplot.hold(True)
     pyplot.title(filename)
 
@@ -136,6 +136,7 @@ def plot2dFigure(filename,xAxis,yAxis,xLabel="",yLabel="",show=True):
     pyplot.xlabel(xLabel)
     pyplot.ylabel(yLabel)
     pyplot.legend()
+    pyplot.hold(False)
 
     pyplot.show()
 
