@@ -1,6 +1,7 @@
 # code to get the data for certain airfoils
 
-import re,urllib.request
+import numpy,re,urllib.request
+from shared import *
 
 class AirFoil():
 	"""class to load airfoil data and return the lift and drag values depending on the angle of attack"""
@@ -8,12 +9,27 @@ class AirFoil():
 	def __init__(self, foilName="naca23015-il", reynoldsNumber=50000):
 		"initiates the class by calling setFoilData that populates alpha, CL and CD"
 
+		self.foilName = foilName
+		self.reynoldsNumber = reynoldsNumber
 		self.AoAs = []
 		self.CDs = []
 		self.CLs = []
 		self.CLCDs = []
 		
 		self.setFoilData(foilName,reynoldsNumber)
+
+	def plotData(self):
+		"method to plot the range of efficiency values for the airfoil"
+
+		xAxis = numpy.linspace(min(self.AoAs),max(self.AoAs),100)
+		yAxis = []
+
+		for alpha in xAxis:
+			yAxis.append(self.getEfficiency(alpha))
+
+		filename = self.reynoldsNumber#"Reynolds Number - {}".format(self.reynoldsNumber)
+
+		return filename,xAxis,yAxis
 		
 	def getIndex(self,alpha):
 		"returns the index of the value where alpha is closest to the angle of attack"
@@ -23,7 +39,8 @@ class AirFoil():
 
 		#check if angle of attack is not close enough to the lookup value
 		if (minimumDifference > 1):
-			raise ValueError("This angle of attack would induce stall")
+			print("stall")
+			#raise ValueError("This angle of attack would induce stall")
 
 		index = difference.index(minimumDifference)
 
@@ -67,6 +84,7 @@ class AirFoil():
 
 		#access the data file
 		url = 'http://airfoiltools.com/polar/text?polar=xf-{}-{}'.format(foilName,reynoldsNumber)
+		#print(url)
 		with urllib.request.urlopen(url) as webPage:
 			content = webPage.read().splitlines()
 
@@ -90,7 +108,22 @@ class AirFoil():
 		self.setEfficiency()
 
 if __name__ == "__main__":
-	airFoil = AirFoil("naca23015-il",100000)
 
-	for alpha in [-8,-6,-4,-2,0,2,4,6,8]:
-		print(airFoil.getEfficiency(alpha))
+	#naca23015-il
+	#sd7037-il
+
+	airfoil = "naca23015-il"
+	xAxis = {}
+	yAxis = {}
+
+	for reynoldsNumber in [50000,100000,200000,500000,1000000]:
+
+		filename,x,y = AirFoil(airfoil,reynoldsNumber).plotData()
+
+		xAxis[filename] = x
+		yAxis[filename] = y
+
+	xLabel = "Angle of Attack"
+	yLabel = "Efficiency"
+
+	plot2dFigure(airfoil,xAxis,yAxis,xLabel,yLabel,True)
