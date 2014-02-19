@@ -70,10 +70,9 @@ def tangentLines(centre1,radius1,centre2,radius2):
 	centre1 = numpy.array(centre1)
 	centre2 = numpy.array(centre2)
 
-	#draw given circles and connecting line
+	#draw given circles
 	drawCircle(centre1,radius1)
 	drawCircle(centre2,radius2)
-	#drawLine(centre1,centre2)
 
 	#compute connecting vector
 	vector = centre1 - centre2
@@ -105,6 +104,9 @@ def tangentLines(centre1,radius1,centre2,radius2):
 
 	pyplot.show()
 
+	result = {'RSR':(t1,t2),'LSL':(t3,t4),'LSR':(t5,t6),'RSL':(t7,t8)}
+	return result
+
 def computeNormal(vector,angle):
 	"computes and returns the normal vector given a vector and angle"
 
@@ -116,11 +118,64 @@ def computeNormal(vector,angle):
 
 	return normal
 
+
+def computeCentre(point,direction,radius):
+	"""computes the centre point of a circle given:
+
+	point - the coordinates of a point that lies on the circumfrence of a circle
+	direction - the direction of heading that is tangential to the circle at the point
+	radius - the radius of the circle
+	"""
+
+	[x,y] = point
+	[d_x,d_y] = direction
+
+	point = numpy.array(point)
+	direction = numpy.array(direction)
+
+	pyplot.hold(True)
+	pyplot.scatter(x,y)
+	drawLine(point,point+direction)
+
+	normal1 = computeNormal(direction,0)
+	normal2 = computeNormal(-direction,0)
+
+	centre1 = point + radius*normal1
+	centre2 = point + radius*normal2
+
+	drawCircle(centre1,radius)
+	drawCircle(centre2,radius)
+
+	pyplot.hold(False)
+	pyplot.show()
+
+	result = {"L":centre1,"R":centre2}
+	return result
+
+def dubinPath(startPoint,startDirection,endPoint,endDirection,radius):
+	"""
+	computes the lengths of the 6 options of dubin paths:
+
+	['RSR','LSL','RSL','LSR','RLR','LRL']
+
+	and plots each path before selecting the shortest path
+	"""
+
+	{'R':startRightCentre,'L':startLeftCentre} = computeCentre(startPoint,startDirection,radius)
+	{'R':endRightCentre,'L':endLeftCentre} = computeCentre(endPoint,endDirection,radius)
+
+
+
 if __name__ == "__main__":
 
-	tangentLines([-1,0],1,[2,0],1.5)
-	tangentLines([-5,5],1,[2,0],3)
-	tangentLines([-5,5],6,[12,0],3)
+	computeCentre([0,0],[1,0],1)
+	computeCentre([1,1],[1,1],1)
+	computeCentre([0,0],[0,1],1)
+	computeCentre([0,0],[-1,-1],1)
+
+	#tangentNodes = tangentLines([-1,0],1,[2,0],1)
+	#tangentLines([-5,5],1,[2,0],3)
+	#tangentLines([-5,5],6,[12,0],3)
 
 
 	# drawArc([0,0],[-1,0],[0,1])
