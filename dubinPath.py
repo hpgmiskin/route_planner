@@ -3,8 +3,14 @@
 import numpy
 import matplotlib.pyplot as pyplot
 
+DEBUG = True
+
 def drawLine(startPoint,endPoint):
 	"draws a line with the given start and end points"
+
+	startPoint = numpy.array(startPoint)
+	endPoint = numpy.array(endPoint)
+	distance = numpy.linalg.norm(endPoint - startPoint)
 
 	x = [startPoint[0],endPoint[0]]
 	y = [startPoint[1],endPoint[1]]
@@ -12,7 +18,9 @@ def drawLine(startPoint,endPoint):
 	pyplot.hold(True)
 	pyplot.plot(x,y)
 
-def drawArc(centre,startPoint,endPoint):
+	return distance
+
+def drawArc(centre,startPoint,endPoint,direction):
 	"draws an arc with the given centre and radius given the start and end points"
 
 	centre = numpy.array(centre)
@@ -23,7 +31,8 @@ def drawArc(centre,startPoint,endPoint):
 	radiusB = numpy.linalg.norm(endPoint-centre)
 
 	if (round(radiusA,2) != round(radiusB,2)):
-		raise ValueError("The given start and end points do not lie on the circle with centre {}".format(centre))
+		pyplot.show()
+		raise RuntimeWarning("The given start point {} and end point {} do not lie on the circle with centre {}".format(startPoint,endPoint,centre))
 	else:
 		radius = max(radiusA,radiusB)
 	
@@ -32,12 +41,14 @@ def drawArc(centre,startPoint,endPoint):
 	startAngle = numpy.arctan2(Y1,X1)
 	endAngle = numpy.arctan2(Y2,X2)
 
-	if (endAngle < startAngle):
+	if ((startAngle<endAngle) and direction == "R"):
+		startAngle += 2*numpy.pi
+	elif ((startAngle>endAngle) and direction == "L"):
 		endAngle += 2*numpy.pi
 
-	theta = numpy.linspace(startAngle,endAngle,100)
-	xLine = centre[0] + radius*numpy.cos(theta)
-	yLine = centre[1] + radius*numpy.sin(theta)
+	thetas = numpy.linspace(startAngle,endAngle,100)
+	xLine = centre[0] + radius*numpy.cos(thetas)
+	yLine = centre[1] + radius*numpy.sin(thetas)
 
 	xScatter = [centre[0],startPoint[0],endPoint[0]]
 	yScatter = [centre[1],startPoint[1],endPoint[1]]
@@ -46,7 +57,10 @@ def drawArc(centre,startPoint,endPoint):
 	pyplot.scatter(xScatter,yScatter)
 	pyplot.plot(xLine,yLine)
 
-	return xLine,yLine
+	theta = abs(startAngle - endAngle)
+	distance = radius*theta
+
+	return distance
 
 def drawCircle(centre,radius):
 	"function to draw a circle"
@@ -59,8 +73,63 @@ def drawCircle(centre,radius):
 	pyplot.plot(x,y)
 	pyplot.axis('equal')
 
-def tangentLines(centre1,radius1,centre2,radius2):
-	"""returns the tangent lines between two circles
+def tangentLines(centre1,centre2,radius,pathType):
+	"""returns the tangent points between two circles with given orientation
+
+	From document: http://gieseanw.files.wordpress.com/2012/10/dubins.pdf
+	By Andy Giese
+	"""
+
+	#assign both radius to the same
+	radius1 = radius2 = radius
+
+	#convert to numpy array for calculation
+	centre1 = numpy.array(centre1)
+	centre2 = numpy.array(centre2)
+
+	#compute connecting vector
+	vector = centre1 - centre2
+	distance = numpy.linalg.norm(vector)
+
+	#return None if distance is too small
+	if (distance < 4*radius):
+		return None,None,None
+	
+	#define tangent points based on configuration
+	if (pathType == "LSL"):
+		angle = (radius2-radius1)/distance
+		angle = numpy.arccos(angle)
+		normal = computeNormal(vector,angle)
+		point1 = centre1 + normal*radius1
+		point2 = centre2 + normal*radius2
+	elif (pathType == "RSR"):
+		angle = -(radius2-radius1)/distance
+		angle = numpy.arccos(angle)
+		normal = computeNormal(-vector,angle)
+		point1 = centre1 + normal*radius1
+		point2 = centre2 + normal*radius2
+	elif (pathType == "LSR"):
+		angle = -(radius2+radius1)/distance
+		angle = numpy.arccos(angle)
+		normal = computeNormal(vector,angle)
+		point1 = centre1 + normal*radius1
+		point2 = centre2 - normal*radius2
+	elif (pathType == "RSL"):
+		angle = (radius2+radius1)/distance
+		angle = numpy.arccos(angle)
+		normal = computeNormal(-vector,angle)
+		point1 = centre1 + normal*radius1
+		point2 = centre2 - normal*radius2
+
+	if DEBUG:
+		drawCircle(centre1,radius1)
+		drawCircle(centre2,radius2)
+		drawLine(point1,point2)
+
+	return (point1,point2)
+
+def tangentCircles(centre1,centre2,radius,pathType):
+	"""returns the tangent points between three circles 
 
 	From document: http://gieseanw.files.wordpress.com/2012/10/dubins.pdf
 	By Andy Giese
@@ -69,57 +138,57 @@ def tangentLines(centre1,radius1,centre2,radius2):
 	#convert to numpy array for calculation
 	centre1 = numpy.array(centre1)
 	centre2 = numpy.array(centre2)
-
-	#draw given circles
-	drawCircle(centre1,radius1)
-	drawCircle(centre2,radius2)
-
-	#compute connecting vector
-	vector = centre1 - centre2
-	distance = numpy.linalg.norm(vector)
 	
-	#compute normal vectors
-	angle = (radius2-radius1)/distance
-	normal1 = computeNormal(vector,angle)
-	normal2 = computeNormal(-vector,-angle)
-	angle = (radius2+radius1)/distance
-	normal3 = computeNormal(vector,-angle)
-	normal4 = computeNormal(-vector,angle)
+	#compute vector between circle centres and calculate length
+	vector1 = centre2-centre1
+	length = numpy.linalg.norm(vector1)
+
+	#if length greater than 4 radius return None
+	if (length >= 4*radius):
+		return None,None,None
+
+	#calculate angle to third circle depending on orientation
+	if pathType == "LRL":
+		theta = numpy.arccos(length/(4*radius))
+	elif pathType == "RLR":
+		theta = -numpy.arccos(length/(4*radius))
+
+	#compute vector from first circle to third circle
+	vector2 = computeNormal(vector1,theta)
+	centre3 = centre1 + vector2*2*radius
+
+	#compute vector from second circle to third circle
+	vector3 = centre3 - centre2
+	vector3 = vector3/numpy.linalg.norm(vector3)
 	
-	#compute tangent points for non crossover
-	t1 = centre1 + normal1*radius1
-	t2 = centre2 + normal1*radius2
-	t3 = centre1 + normal2*radius1
-	t4 = centre2 + normal2*radius2
-	drawLine(t1,t2)
-	drawLine(t3,t4)
+	#calculate locations of tangents
+	startTangent = centre1 + vector2*radius
+	endTangent = centre2 + vector3*radius
 
-	#compute tangent points for crossover
-	t5 = centre1 + normal3*radius1
-	t6 = centre2 - normal3*radius2
-	t7 = centre1 + normal4*radius1
-	t8 = centre2 - normal4*radius2
-	drawLine(t5,t6)
-	drawLine(t7,t8)
+	if DEBUG:
+		pyplot.scatter(centre3[0],centre3[1])
+		pyplot.scatter(startTangent[0],startTangent[1])
+		drawCircle(centre3,radius)
+		pyplot.scatter(endTangent[0],endTangent[1])
 
-	pyplot.show()
-
-	result = {'RSR':(t1,t2),'LSL':(t3,t4),'LSR':(t5,t6),'RSL':(t7,t8)}
-	return result
+	return startTangent,endTangent,centre3
 
 def computeNormal(vector,angle):
 	"computes and returns the normal vector given a vector and angle"
 
+	print("angle: {}".format(angle*180/numpy.pi))
+
+	cosAngle = numpy.cos(angle)
+
 	[v_x,v_y] = vector
-	n_x = (v_x * angle) - (v_y * numpy.sqrt(1-angle**2))
-	n_y = (v_x * numpy.sqrt(1-angle**2)) + (v_y * angle)
+	n_x = (v_x * cosAngle) - (v_y * numpy.sqrt(1-cosAngle**2))
+	n_y = (v_x * numpy.sqrt(1-cosAngle**2)) + (v_y * cosAngle)
 	normal = numpy.array([n_x,n_y])
 	normal = normal/numpy.linalg.norm(normal)
 
 	return normal
 
-
-def computeCentre(point,direction,radius):
+def computeCentre(point,direction,radius,orientation):
 	"""computes the centre point of a circle given:
 
 	point - the coordinates of a point that lies on the circumfrence of a circle
@@ -133,26 +202,22 @@ def computeCentre(point,direction,radius):
 	point = numpy.array(point)
 	direction = numpy.array(direction)
 
-	pyplot.hold(True)
-	pyplot.scatter(x,y)
-	drawLine(point,point+direction)
+	if (orientation == "L"):
+		normal = computeNormal(direction,numpy.pi/2)
+		centre = point + radius*normal
+	elif (orientation == "R"):
+		normal = computeNormal(-direction,numpy.pi/2)
+		centre = point + radius*normal
 
-	normal1 = computeNormal(direction,0)
-	normal2 = computeNormal(-direction,0)
+	if DEBUG:
+		pyplot.hold(True)
+		pyplot.scatter(x,y)
+		drawLine(point,point+direction)
+		drawCircle(centre,radius)
 
-	centre1 = point + radius*normal1
-	centre2 = point + radius*normal2
+	return centre
 
-	drawCircle(centre1,radius)
-	drawCircle(centre2,radius)
-
-	pyplot.hold(False)
-	pyplot.show()
-
-	result = {"L":centre1,"R":centre2}
-	return result
-
-def dubinPath(startPoint,startDirection,endPoint,endDirection,radius):
+def dubinPath(startPoint,startDirection,endPoint,endDirection,radius,pathType):
 	"""
 	computes the lengths of the 6 options of dubin paths:
 
@@ -161,17 +226,67 @@ def dubinPath(startPoint,startDirection,endPoint,endDirection,radius):
 	and plots each path before selecting the shortest path
 	"""
 
-	{'R':startRightCentre,'L':startLeftCentre} = computeCentre(startPoint,startDirection,radius)
-	{'R':endRightCentre,'L':endLeftCentre} = computeCentre(endPoint,endDirection,radius)
+	startPoint = numpy.array(startPoint)
+	endPoint = numpy.array(endPoint)
 
+	minDistance = numpy.linalg.norm(endPoint-startPoint)
+	distance = 0
 
+	if (pathType in ['RSR','LSL','RSL','LSR']):
+
+		startCentre = computeCentre(startPoint,startDirection,radius,pathType[0])
+		endCentre = computeCentre(endPoint,endDirection,radius,pathType[2])
+		startTangent,endTangent = tangentLines(startCentre,endCentre,radius,pathType)
+
+		if None in [startTangent,endTangent]:
+			distance = numpy.infty
+		else:
+			distance += drawArc(startCentre,startPoint,startTangent,pathType[0])
+			distance += drawLine(startTangent,endTangent)
+			distance += drawArc(endCentre,endTangent,endPoint,pathType[2])
+
+		pyplot.axis('equal')
+		pyplot.show()
+
+	elif (pathType in ['RLR','LRL']):
+		startCentre = computeCentre(startPoint,startDirection,radius,pathType[0])
+		endCentre = computeCentre(endPoint,endDirection,radius,pathType[2])
+
+		startTangent,endTangent,middleCentre = tangentCircles(startCentre,endCentre,radius,pathType)
+
+		if None in [startTangent,endTangent,middleCentre]:
+			distance = numpy.infty
+		else:
+			distance += drawArc(startCentre,startPoint,startTangent,pathType[0])
+			distance += drawArc(middleCentre,startTangent,endTangent,pathType[1])
+			distance += drawArc(endCentre,endTangent,endPoint,pathType[2])
+
+		pyplot.show()		
+	else:
+		distance = numpy.infty
+
+	print(distance)
+
+	return distance
 
 if __name__ == "__main__":
 
-	computeCentre([0,0],[1,0],1)
-	computeCentre([1,1],[1,1],1)
-	computeCentre([0,0],[0,1],1)
-	computeCentre([0,0],[-1,-1],1)
+	dubinPath([0,0],[0,1],[2,2],[1,0],1,'RLR')
+	dubinPath([0,0],[0,0],[2,2],[1,0],1,'RLR')
+	dubinPath([0,0],[0,1],[2,2],[1,0],1,'LRL')
+	# dubinPath([0,0],[0,1],[4,4],[1,0],1,'RSR')
+	# dubinPath([0,0],[0,1],[4,4],[1,0],1,'LSL')
+	# dubinPath([0,0],[0,1],[4,4],[1,0],1,'LSR')
+	# dubinPath([0,0],[0,1],[4,4],[1,0],1,'RSL')
+	# dubinPath([0,0],[0,-1],[4,4],[1,0],1,'RSR')
+	# dubinPath([0,0],[0,-1],[4,4],[1,0],1,'LSL')
+	# dubinPath([0,0],[0,-1],[4,4],[1,0],1,'LSR')
+	# dubinPath([0,0],[0,-1],[4,4],[1,0],1,'RSL')
+
+	# computeCentre([0,0],[1,0],1)
+	# computeCentre([1,1],[1,1],1)
+	# computeCentre([0,0],[0,1],1)
+	# computeCentre([0,0],[-1,-1],1)
 
 	#tangentNodes = tangentLines([-1,0],1,[2,0],1)
 	#tangentLines([-5,5],1,[2,0],3)
