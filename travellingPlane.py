@@ -1,23 +1,31 @@
 from shared import *
 from greedyTSP import *
+from dubinPath import bestPath
 import itertools
 import numpy
+
+radius = 0.1
 
 class TravellingPlane():
 	"""travellingPlane is used to calculate the optimum ordering of points given the node locations"""
 	
-	def __init__(self, orderType):
+	def __init__(self, orderType, routeOrPath):
 		"initiates the travelling plane with the node location by defining the energy matrix"
 
 		self.orderType = orderType
+		self.routeOrPath = routeOrPath
 
 	def setNodes(self,nodes,startNode=None):
 		"sets the position of the nodes that travelling plane routes around and define the energy matrix"
 
-		self.nodes = nodes
 		self.startNode=startNode
 		self.numberNodes = len(nodes)
-		self.setEnergyMatrix()
+		self.nodes = [numpy.array(node) for node in nodes]
+		
+		if (self.routeOrPath == "route"):
+			self.setEnergyMatrix()
+		elif (self.routeOrPath == "path"):
+			self.setEnergyPathMatrix()
 
 	def getOrder(self,orderType=None):
 		"returns the order of the nodes using the required function"
@@ -66,6 +74,7 @@ class TravellingPlane():
 			for node in routeB[:-1]:
 				currentIndexs.remove(node)
 
+
 			highestIndex = sorted(currentIndexs, key=lambda x:nodes[x][2])[-1]
 
 			#calculate all possible route combinations
@@ -78,8 +87,12 @@ class TravellingPlane():
 			#for all possible routes check if least cost
 			for route in possibleRoutes:
 
-				costA = self.calculateRouteCost([i for i in route[0]]+[highestIndex])
-				costB = self.calculateRouteCost([i for i in route[1]]+[highestIndex])
+				if (self.routeOrPath == "route"):
+					costA = self.calculateRouteCost([i for i in route[0]]+[highestIndex])
+					costB = self.calculateRouteCost([i for i in route[1]]+[highestIndex])
+				elif (self.routeOrPath == "path"):
+					costA = self.calculateRoutePathCost([i for i in route[0]]+[highestIndex])
+					costB = self.calculateRoutePathCost([i for i in route[1]]+[highestIndex])
 
 				cost = sum([costA,costB])
 
@@ -95,7 +108,13 @@ class TravellingPlane():
 
 		routeB.reverse()
 		bestRoute = routeA+routeB
-		bestCost = self.calculateRouteCost(bestRoute)
+
+		if (self.routeOrPath == "route"):
+			bestCost = self.calculateRouteCost(bestRoute)
+		elif (self.routeOrPath == "path"):
+			bestCost = self.calculateRoutePathCost(bestRoute)
+
+		
 
 		print("Progressive - {} - {:.2f}".format(bestRoute[:10],bestCost))
 		return bestRoute,bestCost
@@ -109,17 +128,18 @@ class TravellingPlane():
 		nodeIndexs = list(range(0,numberNodes))
 
 		bestRoute = nodeIndexs
-		bestCost = self.calculateRouteCost(nodeIndexs)
+
+		if (self.routeOrPath == "route"):
+			cost = self.calculateRouteCost(route)
+		elif (self.routeOrPath == "path"):
+			cost = self.calculateRoutePathCost(route)
 
 		for i,route in enumerate(itertools.permutations(nodeIndexs)):
 
-			# if (startNode != None):
-			# 	if (route[0] == startNode):
-			# 		pass
-			# 	else:
-			# 		continue
-
-			cost = self.calculateRouteCost(route)
+			if (self.routeOrPath == "route"):
+				cost = self.calculateRouteCost(route)
+			elif (self.routeOrPath == "path"):
+				cost = self.calculateRoutePathCost(route)
 
 			if (cost<bestCost):
 				bestRoute = route
@@ -130,6 +150,9 @@ class TravellingPlane():
 
 	def greedyOrder(self):
 		"method to find a best guess route using a suboptimal greedy travelling salesman"
+
+		if (self.routeOrPath == "path"):
+			raise ValueError("Greedy order does not allow path calculation")
 
 		energyMatrix = self.energyMatrix
 
@@ -152,6 +175,22 @@ class TravellingPlane():
 		cost.append(self.energyMatrix[route[-1]][route[0]])
 		return sum(cost)
 
+	def calculateRoutePathCost(self,route):
+		"calculates the cost of a route given a route (ordering of nodes)"
+
+		cost = []
+
+		for i in range(len(route)-2):
+			nodeA = route[i]
+			nodeB = route[i+1]
+			nodeC = route[i+2]
+			cost.append(self.energyPathMatrix[nodeA][nodeB][nodeC])
+
+		cost.append(self.energyPathMatrix[route[-2]][route[-1]][route[0]])
+		cost.append(self.energyPathMatrix[route[-1]][route[0]][route[1]])
+
+		return sum(cost)
+
 	def setEnergyMatrix(self):
 		"returns a matrix of energy costs to navigate the given node locations"
 
@@ -163,12 +202,43 @@ class TravellingPlane():
 
 		for i in range(numberNodes):
 			for j in range(numberNodes):
-				deltaX = nodes[j][0]-nodes[i][0]
-				deltaY = nodes[j][1]-nodes[i][1]
-				deltaZ = nodes[j][2]-nodes[i][2]
-				energyMatrix[i][j] = calculateEnergy(deltaX,deltaY,deltaZ)
+				vector = nodes[j]-nodes[i]
+				distance = numpy.linalg.norm(vector)
+				height = vector[2]
+				energyMatrix[i][j] = calculateEnergy(distance,height)
 
 		self.energyMatrix = energyMatrix
+
+	def setEnergyPathMatrix(self):
+		"method to set the energy matrix that takes into account change in direction"
+
+		#number of nodes
+		nodes = self.nodes
+		numberNodes = self.numberNodes
+
+		#preallocate energy path matrix
+		pathMatrix = numpy.zeros([numberNodes,numberNodes,numberNodes])
+		energyPathMatrix = numpy.zeros([numberNodes,numberNodes,numberNodes])
+
+		#for set of 3 nodes
+		for i in range(numberNodes):
+			for j in range(numberNodes):
+				for k in range(numberNodes):
+					startPoint = nodes[i]
+					endPoint = nodes[j]
+					startDirection = nodes[j]-nodes[i]
+					endDirection = nodes[k]-nodes[j]
+					
+					if not ((i==j) or (i==k) or (j==k)):
+						pathType,energy = bestPath(startPoint,startDirection,endPoint,endDirection,radius)
+					else:
+						pathType,energy = None,0
+
+					#pathMatrix[i][j][k] = pathType
+					energyPathMatrix[i][j][k] = energy
+
+		self.pathMatrix = pathMatrix
+		self.energyPathMatrix = energyPathMatrix
 
 if __name__ == "__main__":
 	travellingPlane = TravellingPlane([[0,0,0],[0,1,1],[0,1,0],[0,0,1]])

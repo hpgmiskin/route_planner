@@ -1,5 +1,6 @@
 #code to calculate and plot dubin paths
 
+from shared import *
 import numpy
 import matplotlib.pyplot as pyplot
 
@@ -15,8 +16,8 @@ def drawLine(startPoint,endPoint):
 	x = [startPoint[0],endPoint[0]]
 	y = [startPoint[1],endPoint[1]]
 
-	pyplot.hold(True)
-	pyplot.plot(x,y)
+	# pyplot.hold(True)
+	# pyplot.plot(x,y)
 
 	return distance
 
@@ -45,16 +46,16 @@ def drawArc(centre,startPoint,endPoint,direction):
 	elif ((startAngle>endAngle) and direction == "L"):
 		endAngle += 2*numpy.pi
 
-	thetas = numpy.linspace(startAngle,endAngle,100)
-	xLine = centre[0] + radius*numpy.cos(thetas)
-	yLine = centre[1] + radius*numpy.sin(thetas)
+	# thetas = numpy.linspace(startAngle,endAngle,100)
+	# xLine = centre[0] + radius*numpy.cos(thetas)
+	# yLine = centre[1] + radius*numpy.sin(thetas)
 
-	xScatter = [centre[0],startPoint[0],endPoint[0]]
-	yScatter = [centre[1],startPoint[1],endPoint[1]]
+	# xScatter = [centre[0],startPoint[0],endPoint[0]]
+	# yScatter = [centre[1],startPoint[1],endPoint[1]]
 
-	pyplot.hold(True)
-	pyplot.scatter(xScatter,yScatter)
-	pyplot.plot(xLine,yLine)
+	# pyplot.hold(True)
+	# pyplot.scatter(xScatter,yScatter)
+	# pyplot.plot(xLine,yLine)
 
 	theta = abs(startAngle - endAngle)
 	distance = radius*theta
@@ -147,7 +148,7 @@ def tangentCircles(centre1,centre2,radius,pathType):
 
 	#if length greater than 4 radius return None
 	if (length >= 4*radius):
-		print("Circle centre distance ({}) > 4 x radius ({})".format(length,radius*4))
+		#print("Circle centre distance ({}) > 4 x radius ({})".format(length,radius*4))
 		return None,None,None
 
 	#calculate angle to third circle depending on orientation
@@ -238,17 +239,21 @@ def dubinPath(startPoint,startDirection,endPoint,endDirection,radius,pathType):
 	and plots each path before selecting the shortest path
 	"""
 
-	print(pathType)
+	#print(pathType)
 
 	startPoint = numpy.array(startPoint)
 	endPoint = numpy.array(endPoint)
 	startDirection = numpy.array(startDirection)
 	endDirection = numpy.array(endDirection)
 
-	drawLine(startPoint,startPoint+startDirection)
-	drawLine(endPoint,endPoint+endDirection)
+	if DEBUG:
+		print(startPoint,startPoint+startDirection)
+		drawLine(startPoint,startPoint+startDirection)
+		print(endPoint,endPoint+endDirection)
+		drawLine(endPoint,endPoint+endDirection)
 
-	if (all((item==0) for item in startDirection) or all((item==0) for item in endDirection)):
+	if (all([item==0 for item in startDirection]) or all([item==0 for item in endDirection])):
+		print(startDirection,endDirection)
 		raise ValueError("Start Directions must not all be negative")
 
 	minDistance = numpy.linalg.norm(endPoint-startPoint)
@@ -285,7 +290,7 @@ def dubinPath(startPoint,startDirection,endPoint,endDirection,radius,pathType):
 	else:
 		raise ValueError("Path type {} is not in list ['RSR','LSL','RSL','LSR','RLR','LRL']".format(pathType))
 
-	if (distance < numpy.infty):
+	if (distance < numpy.infty) and DEBUG:
 		print(distance)
 		pyplot.axis('equal')
 		pyplot.show()
@@ -295,16 +300,42 @@ def dubinPath(startPoint,startDirection,endPoint,endDirection,radius,pathType):
 def bestPath(startPoint,startDirection,endPoint,endDirection,radius):
 	"computes the length of the best dubin path and returns route of the shortest"
 
+	height = 0
 	bestDistance = numpy.infty
 
+	#is given matrixs are in 3 dimensions correct for height
+	if (max(len(startPoint),len(endPoint)) > 2):
+
+		#calculate height gain
+		height = endPoint[2]-startPoint[2]
+
+		#print(startPoint,startDirection,endPoint,endDirection)
+
+		#reduce to 2D planning problem
+		startPoint = startPoint[:2]
+		startDirection = startDirection[:2]
+		endPoint = endPoint[:2]
+		endDirection = endDirection[:2]
+
+		#check height change not too great
+		maxDistance = numpy.linalg.norm(endPoint-startPoint) + 2*radius*numpy.pi
+		if (calculateEnergy(maxDistance,height) == numpy.infty):
+			return None,numpy.infty
+
+
+	#cycle through options calculating distance
 	for pathType in ['RSR','LSL','RSL','LSR','RLR','LRL']:
+
+		#print(startPoint,startDirection,endPoint,endDirection)
 		distance = dubinPath(startPoint,startDirection,endPoint,endDirection,radius,pathType)
 		
 		if (distance < bestDistance):
 			bestPath = pathType
 			bestDistance = distance
 
-	print("best path is {} at a distance of {}".format(bestPath,bestDistance))
+	distance = numpy.linalg.norm([distance,height])
+
+	return pathType,calculateEnergy(distance,height)
 
 if __name__ == "__main__":
 

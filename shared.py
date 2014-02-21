@@ -62,16 +62,20 @@ def sortListOfTuples(listOfTuples,index=2,change=False):
 
     return listOfTuples
 
-def calculateEnergy(deltaX,deltaY,deltaZ):
+def calculateEnergy(distance,height):
     "calculates and returns the energy required to travel between two points"
 
+    #check if height change is too great
+    if (abs(height) > distance):
+        return numpy.infty
+
+    #define function for drag force
     def dragForce(velocity):
         "returns the drag force of a standard UAV given the velocity"
         return velocity*11/14
 
-    distance = sum([deltaX**2,deltaY**2,deltaZ**2])**0.5
     dragEnergy = distance*dragForce(10)
-    gravityEnergy = mass*gravity*deltaZ
+    gravityEnergy = mass*gravity*height
     totalEnergy = dragEnergy + gravityEnergy
 
     return max([0,totalEnergy])
