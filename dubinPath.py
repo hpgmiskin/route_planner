@@ -16,8 +16,8 @@ def drawLine(startPoint,endPoint):
 	x = [startPoint[0],endPoint[0]]
 	y = [startPoint[1],endPoint[1]]
 
-	# pyplot.hold(True)
-	# pyplot.plot(x,y)
+	pyplot.hold(True)
+	pyplot.plot(x,y)
 
 	return distance
 
@@ -46,16 +46,16 @@ def drawArc(centre,startPoint,endPoint,direction):
 	elif ((startAngle>endAngle) and direction == "L"):
 		endAngle += 2*numpy.pi
 
-	# thetas = numpy.linspace(startAngle,endAngle,100)
-	# xLine = centre[0] + radius*numpy.cos(thetas)
-	# yLine = centre[1] + radius*numpy.sin(thetas)
+	thetas = numpy.linspace(startAngle,endAngle,100)
+	xLine = centre[0] + radius*numpy.cos(thetas)
+	yLine = centre[1] + radius*numpy.sin(thetas)
 
-	# xScatter = [centre[0],startPoint[0],endPoint[0]]
-	# yScatter = [centre[1],startPoint[1],endPoint[1]]
+	xScatter = [centre[0],startPoint[0],endPoint[0]]
+	yScatter = [centre[1],startPoint[1],endPoint[1]]
 
-	# pyplot.hold(True)
-	# pyplot.scatter(xScatter,yScatter)
-	# pyplot.plot(xLine,yLine)
+	pyplot.hold(True)
+	pyplot.scatter(xScatter,yScatter)
+	pyplot.plot(xLine,yLine)
 
 	theta = abs(startAngle - endAngle)
 	distance = radius*theta
@@ -97,26 +97,38 @@ def tangentLines(centre1,centre2,radius,pathType):
 	
 	#define tangent points based on configuration
 	if (pathType == "LSL"):
-		angle = (radius2-radius1)/distance
-		angle = numpy.arccos(angle)
+		ratio = (radius2-radius1)/distance
+		if ((ratio < -1) or (ratio > 1)):
+			if DEBUG: print("Path Type {} is not possible for inputs".format(pathType))
+			return None,None
+		angle = numpy.arccos(ratio)
 		normal = computeVector(vector,angle)
 		point1 = centre1 + normal*radius1
 		point2 = centre2 + normal*radius2
 	elif (pathType == "RSR"):
-		angle = -(radius2-radius1)/distance
-		angle = numpy.arccos(angle)
+		ratio = -(radius2-radius1)/distance
+		if ((ratio < -1) or (ratio > 1)):
+			if DEBUG: print("Path Type {} is not possible for inputs".format(pathType))
+			return None,None
+		angle = numpy.arccos(ratio)
 		normal = computeVector(-vector,angle)
 		point1 = centre1 + normal*radius1
 		point2 = centre2 + normal*radius2
 	elif (pathType == "LSR"):
-		angle = -(radius2+radius1)/distance
-		angle = numpy.arccos(angle)
+		ratio = -(radius2+radius1)/distance
+		if ((ratio < -1) or (ratio > 1)):
+			if DEBUG: print("Path Type {} is not possible for inputs".format(pathType))
+			return None,None
+		angle = numpy.arccos(ratio)
 		normal = computeVector(vector,angle)
 		point1 = centre1 + normal*radius1
 		point2 = centre2 - normal*radius2
 	elif (pathType == "RSL"):
-		angle = (radius2+radius1)/distance
-		angle = numpy.arccos(angle)
+		ratio = (radius2+radius1)/distance
+		if ((ratio < -1) or (ratio > 1)):
+			if DEBUG: print("Path Type {} is not possible for inputs".format(pathType))
+			return None,None
+		angle = numpy.arccos(ratio)
 		normal = computeVector(-vector,angle)
 		point1 = centre1 + normal*radius1
 		point2 = centre2 - normal*radius2
@@ -127,6 +139,8 @@ def tangentLines(centre1,centre2,radius,pathType):
 		drawLine(point1,point2)
 
 	if (all(numpy.isnan(point1)) and all(numpy.isnan(point2))):
+		if DEBUG:
+			print("Path Type {} is not possible for inputs".format(pathType))
 		return None,None
 
 	return point1,point2
@@ -148,7 +162,8 @@ def tangentCircles(centre1,centre2,radius,pathType):
 
 	#if length greater than 4 radius return None
 	if (length >= 4*radius):
-		#print("Circle centre distance ({}) > 4 x radius ({})".format(length,radius*4))
+		if DEBUG:
+			print("Circle centres are too far apart")
 		return None,None,None
 
 	#calculate angle to third circle depending on orientation
@@ -226,7 +241,7 @@ def computeCentre(point,direction,radius,orientation):
 		pyplot.hold(True)
 		pyplot.scatter(x,y)
 		drawLine(point,point+direction)
-		drawCircle(centre,radius)
+		#drawCircle(centre,radius)
 
 	return centre
 
@@ -326,6 +341,8 @@ def bestPath(startPoint,startDirection,endPoint,endDirection,radius):
 	#cycle through options calculating distance
 	for pathType in ['RSR','LSL','RSL','LSR','RLR','LRL']:
 
+		if DEBUG: print(pathType)
+
 		#print(startPoint,startDirection,endPoint,endDirection)
 		distance = dubinPath(startPoint,startDirection,endPoint,endDirection,radius,pathType)
 		
@@ -339,11 +356,11 @@ def bestPath(startPoint,startDirection,endPoint,endDirection,radius):
 
 if __name__ == "__main__":
 
-	bestPath([0,0],[0,1],[0,2],[0,1],1)
-	bestPath([0,0],[0,1],[2,2],[1,0],1)
+	# bestPath([0,0],[0,1],[0,2],[0,1],1)
+	# bestPath([0,0],[0,1],[2,2],[1,0],1)
 	bestPath([0,0],[0,1],[1,2],[1,0],2)
-	bestPath([0,0],[0,-1],[2,2],[1,0],1)
-	bestPath([6,0],[0,-1],[6,2],[1,1],1)
+	# bestPath([0,0],[0,-1],[2,2],[1,0],1)
+	# bestPath([6,0],[0,-1],[6,2],[1,1],1)
 
 	# dubinPath([0,0],[0,1],[2,2],[1,0],1,'RLR')
 	# dubinPath([0,0],[0,1],[1,1],[1,0],1,'RLR')

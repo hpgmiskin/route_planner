@@ -1,43 +1,11 @@
-import numpy,math,operator,itertools
-
-import matplotlib
-from mpl_toolkits.mplot3d import Axes3D
-import matplotlib.pyplot as pyplot
+import numpy,math,operator,itertools,os,sys,csv,subprocess,math,operator
 
 DEBUG = False
 gravity = 9.81
 mass = 10
 
-def factorial(n):
-    "function to return the factorial of a number"
-    
-    if n == 0:
-        return 1
-    else:
-        return n * factorial(n-1)
-
-def average(inputList):
-    "returns the average of the list"
-
-    if ((type(inputList) != list) or (len(inputList) < 1)):
-        return inputList
-
-    return sum(inputList)/len(inputList)
-
-def addLists(listA,listB):
-    "adds the list indices together and returns a list"
-
-    if (len(listA) != len(listB)):
-        raise ValueError("lists need to be of the same length")
-
-    newList = [listA[i]+listB[i] for i in range(len(listA))]
-    
-    return newList
-
-def negativeList(inputList):
-    "returns the negative version of the list"
-
-    return [-i for i in inputList]
+MATLAB_FILEPATH = "update_data.m"
+MATLAB_OUTPUT_FILEPATH = "matlab_output"
 
 def changeArray(array):
     """function that cahgnes the configuration of an array 
@@ -49,18 +17,47 @@ def changeArray(array):
 
     return [[float(array[j][i]) for j in range(len(array))] for i in range(len(array[0]))]
 
-def sortListOfTuples(listOfTuples,index=2,change=False):
-    "sorts and returns the given list of tuples by the given index"
+def loadData(filename):
+    "loads the data in the given file into a dictionary where the coloumb headings are the keys"
 
-    if change:
-        listOfTuples = changeArray(listOfTuples)
+    with open(filePath,"r") as csvFile:
+        csvReader = csv.reader(csvFile,dialect="excel")
 
-    listOfTuples.sort(key = operator.itemgetter(index))
+        columbNames = csvReader[0]
+        data = {}
 
-    if change:
-        listOfTuples = changeArray(listOfTuples)
+        for item in columbNames:
+            data[item] = []
 
-    return listOfTuples
+        for row in csvReader[1:]:
+            for i,item in enumerate(row):
+                data[columbNames[i]].append(round(item))
+
+
+    return data
+
+def saveData(filename,data):
+    """function to save the given data as a CSV file
+
+    only writes the shortest data
+    """
+
+    with open(filename, 'w', newline='') as csvfile:
+        csvWriter = csv.writer(csvfile, dialect="excel")
+
+        columbNames = []
+
+        for key in data.keys():
+            columbNames.append(key)
+
+        csvWriter.writerow(columbNames)
+
+        numberRows = min([len(data[key]) for key in columbNames])
+
+        for i in range(numberRows):
+            row = [item[i] for item in data.values()]
+            csvWriter.writerow(row)
+
 
 def calculateEnergy(distance,height):
     "calculates and returns the energy required to travel between two points"
@@ -80,93 +77,52 @@ def calculateEnergy(distance,height):
 
     return max([0,totalEnergy])
 
-def permutation(nodes,nodeA=None,nodeB=None):
-    """function to display the possible permutation sets for 2 routes
-    starting at node index nodeA and node index nodeB in set nodes"""
+def latinHypercube(numberPoints):
+    "function to return the nodes contained within a latin hypercube of given size"
 
-    N = len(nodes)
+    filePath = "matlab/{}_{}.csv".format(MATLAB_OUTPUT_FILEPATH,numberPoints)
 
-    if (N%2 != 0):
-        raise ValueError("N needs to be an even number of nodes") 
-    routeLength = N//2
+    def updateMatlab(numberPoints):
+        """function to run the required matlab script that updates all required data
 
-    permutationA=[]
-    permutationB=[]
-
-    for item in itertools.permutations(nodes,routeLength):
-
-        if ((nodeA == item[0]) or (nodeA == None)):
-            permutationA.append(item)
-        elif ((nodeB == item[0]) or (nodeB == None)):
-            permutationB.append(item)
-
-    #print(permutationA)
-    #print(permutationB)
-
-    def checkRoutes(routeA,routeB):
-        """checks the given routes to see if any nodes are repeated
-
-        returns True if exclusive
-        returns False if any repetition
+        assumes that the function to update matlab is stored in a folder called matlab of current directory
         """
 
-        for node in routeA:
-            if (node in routeB):
-                return False
+        fileContents = ""
+        fileContents+="output = bestlh({},3,1,1);\n".format(numberPoints)
+        fileContents+="csvwrite('{}_{}.csv',output);".format(MATLAB_OUTPUT_FILEPATH,numberPoints)
 
-        return True
+        with open("matlab/"+MATLAB_FILEPATH,"w") as openFile:
+            openFile.write(fileContents)
 
-    permutations = []
+        filePath = "matlab/"+MATLAB_FILEPATH
+        currentDirectory = os.getcwd()
+        matlabCommand = 'cd {}, run {}, exit'.format(currentDirectory,filePath)
 
-    for routeA in permutationA:
-        for routeB in permutationB:
+        subprocess.check_call(['matlab', '-wait', '-automation', '-nosplash', '-noFigureWindows', '-r', matlabCommand])
 
-            if checkRoutes(routeA,routeB):
-                permutations.append([routeA,routeB])
+    def loadMatlab(filePath):
+        "function to load the data created by MATLAB"
 
-    return permutations
+        nodes = []
+        with open(filePath,"r") as csvFile:
+            csvReader = csv.reader(csvFile,dialect="excel")
+            for row in csvReader:
+                node = [float(item) for item in row[:3] if len(item)>0]
+                if (len(node) == 3):
+                    nodes.append(node)
 
+        return nodes
 
-def plot2dFigure(filename,xAxis,yAxis,xLabel="",yLabel="",save=False):
-    "method to plot the class data and if DEBUG = False save the figure"
+    try:
+        open(filePath)
+    except FileNotFoundError:
+        updateMatlab(numberPoints)
 
-    pyplot.figure(num=filename)
-    pyplot.hold(True)
-    pyplot.title(filename)
+    return loadMatlab(filePath)
 
-    if (type(yAxis) == dict):
-        if (type(xAxis) == dict):
-            for name,data in sorted(xAxis.items(),key=lambda x:x[0]):
-                pyplot.plot(data,yAxis[name],label=name)
-        else:
-            for name,data in yAxis.items():
-                pyplot.plot(xAxis[:len(data)],data,label=name)
-    else:
-        pyplot.plot(xAxis[:len(yAxis)],yAxis[:len(xAxis)],label="")
-
-    pyplot.xlabel(xLabel)
-    pyplot.ylabel(yLabel)
-    pyplot.legend(loc=4)
-    pyplot.hold(False)
-
-    pyplot.show()
-    pyplot.close(filename)
-
-def plot3dFigure(filename,plotData,show=True):
-    "method to plot the class data and if DEBUG = False save the figure"
-
-    matplotlib.rcParams['legend.fontsize'] = 10
-
-    fig = pyplot.figure(num=filename)
-    ax = fig.gca(projection='3d')
-
-    x,y,z = plotData[0],plotData[1],plotData[2]
-    
-    ax.plot(x, y, z, label=filename)
-    ax.legend()
-
-    if show:
-        fig.show()
-    else:
-        fig.savefig(filename+".png")
-    
+if __name__ == "__main__":
+    nodes = latinHypercube(12)
+    print(nodes)
+    [x,y,z] = changeArray(nodes)
+    print(x,y,z)
