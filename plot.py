@@ -4,7 +4,19 @@ from matplotlib import pyplot
 
 FONTSIZE = 10
 
-def plotHistogram(data,numberBars=10,title="",xLabel="",yLabel="",show=False):
+def saveFigure(title,show):
+	"function to save or show the current figure given the title"
+
+	if show:
+		pyplot.show()
+		pyplot.close()
+		return None
+	else:
+		filename = "figures/{}.png".format(title.replace(" ","_").lower())
+		pyplot.savefig(filename)
+		return filename
+
+def histogram(data,title="",xLabel="",yLabel="",numberBars=10,show=False):
 	"plots a histogram of the given data data"
 
 	pyplot.figure()
@@ -13,13 +25,9 @@ def plotHistogram(data,numberBars=10,title="",xLabel="",yLabel="",show=False):
 	pyplot.xlabel(xLabel,fontsize=FONTSIZE)
 	pyplot.ylabel(yLabel,fontsize=FONTSIZE)
 
-	if show:
-		pyplot.show()
-		pyplot.close()
-	else:
-		pyplot.savefig(title)
+	return saveFigure(title,show)
 
-def plotBar(labels,values,title="",xLabel="",yLabel="",show=False):
+def bar(labels,values,title="",xLabel="",yLabel="",show=False):
 	"plots a bar chart with the givne labels and data values"
 
 	length = len(values)
@@ -42,13 +50,9 @@ def plotBar(labels,values,title="",xLabel="",yLabel="",show=False):
 	pyplot.xlabel(xLabel,fontsize=FONTSIZE)
 	pyplot.ylabel(yLabel,fontsize=FONTSIZE)
 
-	if show:
-		pyplot.show()
-		pyplot.close()
-	else:
-		pyplot.savefig(title)
-False
-def plotPie(labels,values,title="",xLabel="",yLabel="",show=False):
+	return saveFigure(title,show)
+
+def pie(labels,values,title="",xLabel="",yLabel="",show=False):
 	"plot a pie cahrt with the given labels and data values"
 
 	figure = pyplot.figure(num=title)
@@ -61,13 +65,9 @@ def plotPie(labels,values,title="",xLabel="",yLabel="",show=False):
 	pyplot.xlabel(xLabel,fontsize=FONTSIZE)
 	pyplot.ylabel(yLabel,fontsize=FONTSIZE)
 
-	if show:
-		pyplot.show()
-		pyplot.close()
-	else:
-		pyplot.savefig(title)
+	return saveFigure(title,show)
 
-def plotLine(xAxis,yAxis,title="",xLabel="",yLabel="",xTicks=None,yTicks=None,show=False):
+def line(xAxis,yAxis,title="",xLabel="",yLabel="",xTicks=None,yTicks=None,show=False):
 	"method to plot the class data and if DEBUG = False save the figure"
 
 	pyplot.figure(num=title)
@@ -94,32 +94,26 @@ def plotLine(xAxis,yAxis,title="",xLabel="",yLabel="",xTicks=None,yTicks=None,sh
 	pyplot.legend(fontsize=FONTSIZE)
 	pyplot.hold(False)
 
-	if show:
-		pyplot.show()
-	else:
-		pyplot.savefig(title)
+	return saveFigure(title,show)
 
-def plotLine3(xAxis,yAxis,zAxis,title="",xLabel="",yLabel="",zLabel="",show=False):
-    "method to plot the class data and if DEBUG = False save the figure"
+def line3(xAxis,yAxis,zAxis,title="",xLabel="",yLabel="",zLabel="",show=False):
+	"method to plot the class data and if DEBUG = False save the figure"
 
-    matplotlib.rcParams['legend.fontsize'] = 10
+	matplotlib.rcParams['legend.fontsize'] = 10
 
-    figure = pyplot.figure(num=title)
-    axes = Axes3D(figure)
+	figure = pyplot.figure(num=title)
+	axes = Axes3D(figure)
 
-    axes.plot(xAxis, yAxis, zAxis, label=title)
-    axes.set_xlabel(xLabel,fontsize=FONTSIZE)
-    axes.set_ylabel(yLabel,fontsize=FONTSIZE)
-    axes.set_zlabel(zLabel,fontsize=FONTSIZE)
-    axes.set_title(title,fontsize=FONTSIZE)
-    axes.legend()
+	axes.plot(xAxis, yAxis, zAxis, label=title)
+	axes.set_xlabel(xLabel,fontsize=FONTSIZE)
+	axes.set_ylabel(yLabel,fontsize=FONTSIZE)
+	axes.set_zlabel(zLabel,fontsize=FONTSIZE)
+	axes.set_title(title,fontsize=FONTSIZE)
+	axes.legend()
 
-    if show:
-        figure.show()
-    else:
-        figure.savefig(title)
+	return saveFigure(title,show)
 
-def plotScatter(xAxis,yAxis,title="",xLabel="",yLabel="",xTicks=None,yTicks=None,show=False):
+def scatter(xAxis,yAxis,title="",xLabel="",yLabel="",xTicks=None,yTicks=None,show=False):
 	"method to plot the class data and if DEBUG = False save the figure"
 
 	pyplot.figure(num=title)
@@ -146,30 +140,24 @@ def plotScatter(xAxis,yAxis,title="",xLabel="",yLabel="",xTicks=None,yTicks=None
 	pyplot.legend(fontsize=FONTSIZE)
 	pyplot.hold(False)
 
-	if show:
-		pyplot.show()
-	else:
-		pyplot.savefig(title)
+	return saveFigure(title,show)
 
-def plotScatter3(xAxis,yAxis,zAxis,title="",xLabel="",yLabel="",zLabel="",show=False):
-    "method to plot the class data and if DEBUG = False save the figure"
+def scatter3(xAxis,yAxis,zAxis,title="",xLabel="",yLabel="",zLabel="",show=False):
+	"method to plot the class data and if DEBUG = False save the figure"
 
-    matplotlib.rcParams['legend.fontsize'] = 10
+	matplotlib.rcParams['legend.fontsize'] = 10
 
-    figure = pyplot.figure(num=title)
-    axes = Axes3D(figure)
-    
-    axes.scatter(xAxis, yAxis, zAxis, label=title)
-    axes.set_xlabel(xLabel,fontsize=FONTSIZE)
-    axes.set_ylabel(yLabel,fontsize=FONTSIZE)
-    axes.set_zlabel(zLabel,fontsize=FONTSIZE)
-    axes.set_title(title,fontsize=FONTSIZE)
-    axes.legend(fontsize=FONTSIZE)
+	figure = pyplot.figure(num=title)
+	axes = Axes3D(figure)
+	
+	axes.scatter(xAxis, yAxis, zAxis, label=title)
+	axes.set_xlabel(xLabel,fontsize=FONTSIZE)
+	axes.set_ylabel(yLabel,fontsize=FONTSIZE)
+	axes.set_zlabel(zLabel,fontsize=FONTSIZE)
+	axes.set_title(title,fontsize=FONTSIZE)
+	axes.legend(fontsize=FONTSIZE)
 
-    if show:
-        pyplot.show()
-    else:
-        pyplot.savefig(title)
+	return saveFigure(title,show)
 
 if (__name__ == "__main__"):
 

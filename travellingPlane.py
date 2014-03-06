@@ -1,13 +1,14 @@
 from shared import *
 import numpy,itertools
 
-def progressiveRoute(nodes,nodesPerRoute):
+def progressiveRoute(nodes,nodesPerRoute=4):
 	"method to progressively work through the data set to plot an optimal path"
 
-	totalRouteNodes = nodesPerRoute/2
+	totalRouteNodes = nodesPerRoute*2
 
 	numberNodes = len(nodes)
 	nodes = [numpy.array(node) for node in nodes]
+	setEnergyMatrix(nodes)
 
 	#define list of nodes sorted by vertical location
 	sortedIndexs = sorted(list(range(len(nodes))), key = lambda x:nodes[x][2])
@@ -70,6 +71,10 @@ def allRoutes(nodes):
 	numberNodes = len(nodes)
 	nodeIndexs = list(range(0,numberNodes))
 
+	nodes = [numpy.array(node) for node in nodes]
+	setEnergyMatrix(nodes)
+
+
 	routes,costs = [],[]
 	for route in itertools.permutations(nodeIndexs):
 
@@ -79,6 +84,18 @@ def allRoutes(nodes):
 
 	return routes,costs
 
+def orderNodes(nodes,order):
+	"function to order the given nodes and return"
+
+	orderedNodes = []
+
+	for index in order:
+		orderedNodes.append(nodes[index])
+
+	orderedNodes.append(nodes[order[0]])
+
+	return orderedNodes
+
 def routeCost(route):
 	"calculates the cost of a route given a route (sequence of nodes)"
 
@@ -86,15 +103,16 @@ def routeCost(route):
 	for i in range(len(route)-1):
 		nodeFrom = route[i]
 		nodeTo = route[i+1]
-		cost.append(self.energyMatrix[nodeFrom][nodeTo])
+		cost.append(energyMatrix[nodeFrom][nodeTo])
 
-	cost.append(self.energyMatrix[route[-1]][route[0]])
+	cost.append(energyMatrix[route[-1]][route[0]])
 	return sum(cost)
 
-def energyMatrix(nodes):
+def setEnergyMatrix(nodes):
 	"returns a matrix of energy costs to navigate the given node locations"
 
 	numberNodes = len(nodes)
+	global energyMatrix
 	energyMatrix = numpy.zeros([numberNodes,numberNodes])
 
 	for i in range(numberNodes):
@@ -104,7 +122,7 @@ def energyMatrix(nodes):
 			height = vector[2]
 			energyMatrix[i][j] = calculateEnergy(distance,height)
 
-	return energyMatrix
+	#return energyMatrix
 
 def doubleRoutePermutations(nodes,nodeA=None,nodeB=None):
     """function to display the possible permutation sets for 2 routes
