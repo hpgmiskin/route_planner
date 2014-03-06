@@ -14,16 +14,27 @@ def saveFigure(title,show):
 	else:
 		filename = "figures/{}.png".format(title.replace(" ","_").lower())
 		pyplot.savefig(filename)
+		pyplot.close("all")
 		return filename
 
-def histogram(data,title="",xLabel="",yLabel="",numberBars=10,show=False):
+def histogram(data,title="",xLabel="Value",yLabel="Frequency",lines=None,numberBars=10,show=False):
 	"plots a histogram of the given data data"
 
-	pyplot.figure()
+	maxFrequency = len(data)/numberBars
+
+	pyplot.figure(num=title)
+	pyplot.hold(True)
 	pyplot.hist(data,numberBars)
 	pyplot.title(title,fontsize=FONTSIZE)
 	pyplot.xlabel(xLabel,fontsize=FONTSIZE)
 	pyplot.ylabel(yLabel,fontsize=FONTSIZE)
+
+	if lines:
+		for name,line in sorted(lines.items(),key=lambda x:x[0],reverse=True):
+			pyplot.plot([line,line],[0,maxFrequency],label=name,linewidth=0.5)
+		pyplot.legend()
+
+	pyplot.hold(False)
 
 	return saveFigure(title,show)
 
@@ -35,7 +46,7 @@ def bar(labels,values,title="",xLabel="",yLabel="",show=False):
 	indexs = numpy.arange(length)
 	barWidth = 1
 
-	figure = pyplot.figure()
+	figure = pyplot.figure(num=title)
 	axes = pyplot.axes()
 
 	barAxes = pyplot.bar(indexs,values,barWidth)
@@ -96,7 +107,7 @@ def line(xAxis,yAxis,title="",xLabel="",yLabel="",xTicks=None,yTicks=None,show=F
 
 	return saveFigure(title,show)
 
-def line3(xAxis,yAxis,zAxis,title="",xLabel="",yLabel="",zLabel="",show=False):
+def line3(xAxis,yAxis,zAxis,title="",xLabel="x",yLabel="y",zLabel="z",show=False):
 	"method to plot the class data and if DEBUG = False save the figure"
 
 	matplotlib.rcParams['legend.fontsize'] = 10
@@ -113,7 +124,7 @@ def line3(xAxis,yAxis,zAxis,title="",xLabel="",yLabel="",zLabel="",show=False):
 
 	return saveFigure(title,show)
 
-def scatter(xAxis,yAxis,title="",xLabel="",yLabel="",xTicks=None,yTicks=None,show=False):
+def scatter(xAxis,yAxis,title="",xLabel="x",yLabel="y",xTicks=None,yTicks=None,show=False):
 	"method to plot the class data and if DEBUG = False save the figure"
 
 	pyplot.figure(num=title)
@@ -142,7 +153,7 @@ def scatter(xAxis,yAxis,title="",xLabel="",yLabel="",xTicks=None,yTicks=None,sho
 
 	return saveFigure(title,show)
 
-def scatter3(xAxis,yAxis,zAxis,title="",xLabel="",yLabel="",zLabel="",show=False):
+def scatter3(xAxis,yAxis,zAxis,title="",xLabel="x",yLabel="y",zLabel="z",show=False):
 	"method to plot the class data and if DEBUG = False save the figure"
 
 	matplotlib.rcParams['legend.fontsize'] = 10
@@ -163,9 +174,10 @@ if (__name__ == "__main__"):
 
 	pyplot.close("all")
 
-	plotHistogram([2,4,5,6.7])
-	plotHistogram(numpy.random.randn(2000)*8)
+	histogram([2,4,5,6.7])
+	histogram(numpy.random.randn(2000)*8)
+	histogram(numpy.random.randn(2000)*8,lines=[2,3],show=True)
 
-	plotScatter([0,1,2],[0,1,2])
-	plotScatter3([0,1,2,8],[0,1,2,3],[0,1,2,4])
-	plotScatter("hello",{"point1":(1,2),"point2":(1,4),"   ":(2,4)})
+	scatter([0,1,2],[0,1,2])
+	scatter3([0,1,2,8],[0,1,2,3],[0,1,2,4])
+	scatter("hello",{"point1":(1,2),"point2":(1,4),"   ":(2,4)})

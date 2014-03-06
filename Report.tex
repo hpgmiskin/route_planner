@@ -47,17 +47,16 @@ The following section outline the process in which a minimum cost route through 
 
 \begin{table}[width=\textwidth]
 \centering
-    \begin{tabular}{ccc}
-    Name	& Wingspan	& height	\\
-Plane 1	& 20m	& 5m	\\
-Plane 3	& 40m	& 6m	\\
+    \begin{tabular}{cc}
+    Turn Radius	& 0.1	\\
+Wingspan	& 3	\\
 
     \end{tabular}
 \caption{Table of Plane Properties}
 \label{tbl:table_of_plane_properties}
 \end{table}
 
-To considere th minimum cost of circumnavigating a particular route the specifications of a plane must be considered in table \ref{tbl:table_of_plane_properties} the properties of differnt planes is shown
+To considere th minimum cost of circumnavigating a particular route the specifications of a plane must be considered in table \ref{tbl:table_of_plane_properties} the plane detailed in this table is the plane that is used for the entire report
 
 \section{Energy Model}
 \label{sec:energy_model}
@@ -81,17 +80,17 @@ Latin hypercubes are sampling pland that provide the best space fillingness whil
 		\includegraphics[width=0.4\textwidth]{figures/nodes_10.png} 
 		\label{fig:10_nodes}
 	}
+	\subfigure[25 Nodes]{
+		\includegraphics[width=0.4\textwidth]{figures/nodes_25.png} 
+		\label{fig:25_nodes}
+	}
 	\subfigure[50 Nodes]{
 		\includegraphics[width=0.4\textwidth]{figures/nodes_50.png} 
 		\label{fig:50_nodes}
 	}
-	\subfigure[250 Nodes]{
-		\includegraphics[width=0.4\textwidth]{figures/nodes_250.png} 
-		\label{fig:250_nodes}
-	}
-	\subfigure[1250 Nodes]{
-		\includegraphics[width=0.4\textwidth]{figures/nodes_1250.png} 
-		\label{fig:1250_nodes}
+	\subfigure[100 Nodes]{
+		\includegraphics[width=0.4\textwidth]{figures/nodes_100.png} 
+		\label{fig:100_nodes}
 	}
 	\caption{Latin Hypercubes with Varying Numbers of Nodes}
 	\label{fig:latin_hypercubes_with_varying_numbers_of_nodes}
@@ -113,53 +112,18 @@ For this project the idea is to follow this logic to utilise Latin Hypercubes:
 \section{Path Planning}
 \label{sec:path_planning}
 
-Given a set of points within a sample space the next stage of the proceedings is to compute the least cost path through these points. This problem presents itself in the forn of the travelling salesman problem. The travelling salesman problem is the problem of finding the least cost path through a set of points. There is lots of work done on the elicidean travelling salesman problem and introducing heroustics to improe the time taken to compute. This is due to the problem being an NP hard problem (the computing time required increases exponentially with the number of points in the route)
+The least energy route through a number of nodes has been defined however this route assumes that the UAV is able to turn on the spot and is not constricted by turning radius. Therefore to compute the actual energy cost of circumnavigating a route the turning radius of the UAV needs to be considered. Dubins paths are the minimum distance paths given a start and end direction.
 
-\begin{figure}[H]
-	\centering
-	
-	\subfigure[4 Nodes]{
-		\includegraphics[width=0.4\textwidth]{figures/exact_tsp_of_4_nodes.png} 
-		\label{fig:4_nodes}
-	}
-	\subfigure[6 Nodes]{
-		\includegraphics[width=0.4\textwidth]{figures/exact_tsp_of_6_nodes.png} 
-		\label{fig:6_nodes}
-	}
-	\subfigure[8 Nodes]{
-		\includegraphics[width=0.4\textwidth]{figures/exact_tsp_of_8_nodes.png} 
-		\label{fig:8_nodes}
-	}
-	\subfigure[10 Nodes]{
-		\includegraphics[width=0.4\textwidth]{figures/exact_tsp_of_10_nodes.png} 
-		\label{fig:10_nodes}
-	}
-	\caption{Exact routes calculated by travelling salesman}
-	\label{fig:exact_routes_calculated_by_travelling_salesman}
-\end{figure}
+Duibins paths ar comprised of maximum rate turns and straight line segments. The following defines all the routes that are possible made op of maxiumum rate turns and straight line segments
 
-Figure \ref{fig:exact_routes_calculated_by_travelling_salesman} shows the optimal routes for differnt numbers of nodes
+\begin{itemize}
+\item RSR - Right Turn, Straight Flight then Right Turn
+\item RSL - Right Turn, Straight Flight then Left Turn
+\item LSR - Left Turn, Straight Flight then Right Turn
+\item LSL - Left Turn, Straight Flight then Left Turn
+\item RLR - Right Turn, Left Turn then Right Turn
+\item LRL - Left Turn, Right Turn then Left Turn
 
-\begin{table}[width=\textwidth]
-\centering
-    \begin{tabular}{lllll}
-    Number of points	& 4	& 6	& 8	& 10	\\
-Number of possible routes	& 24	& 720	& 40320	& 3628800	\\
-Computation time (ms)	& 0.0	& 5.0	& 634.0	& 33670.0	\\
-Best route cost (J)	& 110.38	& 106.71	& 106.72	& 108.76	\\
-
-    \end{tabular}
-\caption{Comparison of route calculation}
-\label{tbl:comparison_of_route_calculation}
-\end{table}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.4\textwidth]{figures/histogram_of_10_node_route_costs.png} 
-\caption{Histogram of 10 node route costs}
-\label{fig:histogram_of_10_node_route_costs}
-\end{figure}
-
-Figure \ref{fig:histogram_of_10_node_route_costs} shows a histogram of differnt route costs for a 10 node latin hypercube
+\end{itemize}
 
 \end{document}

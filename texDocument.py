@@ -11,6 +11,23 @@ class TexDocument():
 		self.document = ""
 		self.header()
 
+
+	def updateTex(self,content):
+		"method to update the Tex Document with the given content"
+
+		self.document += content
+
+		fileContent = Template(r"""
+$document
+\end{document}
+""")
+
+		fileContent = fileContent.substitute(document=self.document)
+
+		with open(self.filename,'w') as openFile:
+			openFile.write(fileContent)
+
+
 	def header(self):
 		"method to add the required header to a latex file"
 
@@ -62,21 +79,6 @@ $table
 		titlePage = titlePage.substitute(title=title,subtitle=subtitle,name=name,abstract=abstract,table=table)
 		self.updateTex(titlePage)
 
-	def updateTex(self,content):
-		"method to update the Tex Document with the given content"
-
-		self.document += content
-
-		fileContent = Template(r"""
-$document
-\end{document}
-""")
-
-		fileContent = fileContent.substitute(document=self.document)
-
-		with open(self.filename,'w') as openFile:
-			openFile.write(fileContent)
-
 	def section(self,name,sectionType=""):
 		"method to add a section heading to the Tex Document"
 
@@ -114,7 +116,7 @@ $text
 		figure = Template(r"""
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.4\textwidth]{$filename} 
+\includegraphics[width=0.8\textwidth]{$filename} 
 \caption{$caption}
 \label{fig:$label}
 \end{figure}
@@ -182,8 +184,9 @@ $text
 		lines = ""
 
 		for row in table:
-			for item in row:
-				if (item != row[-1]):
+			rowLength = len(row)
+			for count,item in enumerate(row):
+				if (count != rowLength-1):
 					lines += Template(r"$item	& ").substitute(item=item)
 				else:
 					lines += Template(r"""$item	\\

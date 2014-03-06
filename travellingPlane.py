@@ -32,15 +32,31 @@ def progressiveRoute(nodes,nodesPerRoute=4):
 		for node in routeB[:-1]:
 			currentIndexs.remove(node)
 
+		#if there are fewer nodes left than totalRouteNodes
+		if (len(currentIndexs) < totalRouteNodes):
+			#find all possible routes between last node in route a and first in route b
+			routes = routePermutations(currentIndexs,nodeA,nodeB)
+			#compute costs for each route
+			costs = [routeCost(route) for route in routes]
+			#select cheapest cost
+			bestCost = min(costs)
+			#select corresponding route
+			bestRoute = routes[costs.index(bestCost)]
+			#for all items in route aside from start and end nodes add them to route a
+			for index in bestRoute[1:-1]:
+				routeA.append(index)
+			#break the for loop as route complete
+			break
 
+		#compute the index of the highest node
 		highestIndex = sorted(currentIndexs, key=lambda x:nodes[x][2])[-1]
 
 		#calculate all possible route combinations
 		possibleRoutes = doubleRoutePermutations(currentIndexs,nodeA,nodeB)
 		
-		#print(possibleRoutes)
+		#assign a default best route and cost to 
 		bestRoute = possibleRoutes[0]
-		bestCost = numpy.infity
+		bestCost = numpy.infty
 
 		#for all possible routes check if least cost
 		for route in possibleRoutes:
@@ -49,6 +65,7 @@ def progressiveRoute(nodes,nodesPerRoute=4):
 			costB = routeCost([i for i in route[1]]+[highestIndex])
 			cost = sum([costA,costB])
 
+			#if cost is improvement assign best route and best cost
 			if (cost<bestCost):
 				bestRoute = route
 				bestCost = cost
@@ -61,11 +78,11 @@ def progressiveRoute(nodes,nodesPerRoute=4):
 
 	routeB.reverse()
 	bestRoute = routeA+routeB
-	bestCost = routeCost(bestRoute)
+	bestCost = routeCost(bestRoute,True)
 
 	return bestRoute,bestCost
 
-def allRoutes(nodes):
+def allRoutes(nodes,startIndex=None,endIndex=None):
 	"function to compute and return all possible route combinations and the resulting costs"
 
 	numberNodes = len(nodes)
@@ -74,18 +91,25 @@ def allRoutes(nodes):
 	nodes = [numpy.array(node) for node in nodes]
 	setEnergyMatrix(nodes)
 
-
 	routes,costs = [],[]
 	for route in itertools.permutations(nodeIndexs):
 
-		cost = routeCost(route)
+		# if startIndex:
+		# 	if (startIndex != route[0]):
+		# 		continue
+
+		# if endIndex:
+		# 	if (endIndex != route[-1]):
+		# 		continue
+
+		cost = routeCost(route,True)
 		routes.append(route)
 		costs.append(cost)
 
 	return routes,costs
 
 def orderNodes(nodes,order):
-	"function to order the given nodes and return"
+	"function to order the given nodes and return along with the final node to produce a route"
 
 	orderedNodes = []
 
@@ -96,7 +120,7 @@ def orderNodes(nodes,order):
 
 	return orderedNodes
 
-def routeCost(route):
+def routeCost(route,loop=False):
 	"calculates the cost of a route given a route (sequence of nodes)"
 
 	cost = []
@@ -105,7 +129,9 @@ def routeCost(route):
 		nodeTo = route[i+1]
 		cost.append(energyMatrix[nodeFrom][nodeTo])
 
-	cost.append(energyMatrix[route[-1]][route[0]])
+	if loop:
+		cost.append(energyMatrix[route[-1]][route[0]])
+
 	return sum(cost)
 
 def setEnergyMatrix(nodes):
@@ -122,22 +148,38 @@ def setEnergyMatrix(nodes):
 			height = vector[2]
 			energyMatrix[i][j] = calculateEnergy(distance,height)
 
-	#return energyMatrix
+def routePermutations(indexs,startIndex=None,endIndex=None):
+	"""function to return all possible route permutations given a start and end index"""
 
-def doubleRoutePermutations(nodes,nodeA=None,nodeB=None):
+	permutations = []
+	for route in itertools.permutations(indexs):
+
+		if startIndex:
+			if (startIndex != route[0]):
+				continue
+
+		if endIndex:
+			if (endIndex != route[-1]):
+				continue
+
+		permutations.append(route)
+
+	return permutations
+
+def doubleRoutePermutations(indexs,nodeA=None,nodeB=None):
     """function to display the possible permutation sets for 2 routes
-    starting at node index nodeA and node index nodeB in set nodes"""
+    starting at node index nodeA and node index nodeB in set indexs"""
 
-    numberNodes = len(nodes)
+    numberNodes = len(indexs)
 
     if (numberNodes%2 != 0):
-        raise ValueError("N needs to be an even number of nodes") 
+        raise ValueError("N needs to be an even number of indexs, {} is not even".format(numberNodes)) 
     routeLength = numberNodes//2
 
     permutationA=[]
     permutationB=[]
 
-    for item in itertools.permutations(nodes,routeLength):
+    for item in itertools.permutations(indexs,routeLength):
 
         if ((nodeA == item[0]) or (nodeA == None)):
             permutationA.append(item)
@@ -145,7 +187,7 @@ def doubleRoutePermutations(nodes,nodeA=None,nodeB=None):
             permutationB.append(item)
 
     def checkRoutes(routeA,routeB):
-        """checks the given routes to see if any nodes are repeated
+        """checks the given routes to see if any indexs are repeated
 
         returns True if exclusive
         returns False if any repetition

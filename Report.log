@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (MiKTeX 2.9) (preloaded format=pdflatex 2013.11.30)  6 MAR 2014 12:55
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (MiKTeX 2.9) (preloaded format=pdflatex 2013.11.30)  6 MAR 2014 19:31
 entering extended mode
 **Report.tex
 (C:\Users\miskinh\SkyDrive\Code\route_planner\Report.tex
@@ -175,6 +175,37 @@ LaTeX Warning: Label `fig:10_nodes' multiply defined.
 
 LaTeX Warning: Label `sub@fig:10_nodes' multiply defined.
 
+
+LaTeX Warning: Label `tbl:comparison_of_route_calculation' multiply defined.
+
+
+LaTeX Warning: Label `fig:10_nodes' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:10_nodes' multiply defined.
+
+
+LaTeX Warning: Label `fig:25_nodes' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:25_nodes' multiply defined.
+
+
+LaTeX Warning: Label `fig:50_nodes' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:50_nodes' multiply defined.
+
+
+LaTeX Warning: Label `fig:100_nodes' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:100_nodes' multiply defined.
+
+
+LaTeX Warning: Label `fig:exact_routes_calculated_by_travelling_salesman' multi
+ply defined.
+
 )
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 14.
 LaTeX Font Info:    ... okay on input line 14.
@@ -258,107 +289,68 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 <figures/nodes_10.png, id=11, 578.16pt x 433.62pt>
 File: figures/nodes_10.png Graphic file (type png)
  <use figures/nodes_10.png>
-Package pdftex.def Info: figures/nodes_10.png used on input line 83.
+Package pdftex.def Info: figures/nodes_10.png used on input line 82.
 (pdftex.def)             Requested size: 174.1282pt x 130.59647pt.
 
-<figures/nodes_50.png, id=13, 578.16pt x 433.62pt>
+<figures/nodes_25.png, id=13, 578.16pt x 433.62pt>
+File: figures/nodes_25.png Graphic file (type png)
+ <use figures/nodes_25.png>
+Package pdftex.def Info: figures/nodes_25.png used on input line 86.
+(pdftex.def)             Requested size: 174.1282pt x 130.59647pt.
+
+<figures/nodes_50.png, id=14, 578.16pt x 433.62pt>
 File: figures/nodes_50.png Graphic file (type png)
  <use figures/nodes_50.png>
-Package pdftex.def Info: figures/nodes_50.png used on input line 87.
+Package pdftex.def Info: figures/nodes_50.png used on input line 90.
 (pdftex.def)             Requested size: 174.1282pt x 130.59647pt.
 
-<figures/nodes_250.png, id=14, 578.16pt x 433.62pt>
-File: figures/nodes_250.png Graphic file (type png)
+<figures/nodes_100.png, id=15, 578.16pt x 433.62pt>
+File: figures/nodes_100.png Graphic file (type png)
 
-<use figures/nodes_250.png>
-Package pdftex.def Info: figures/nodes_250.png used on input line 91.
+<use figures/nodes_100.png>
+Package pdftex.def Info: figures/nodes_100.png used on input line 94.
 (pdftex.def)             Requested size: 174.1282pt x 130.59647pt.
 
-<figures/nodes_1250.png, id=15, 578.16pt x 433.62pt>
-File: figures/nodes_1250.png Graphic file (type png)
-
-<use figures/nodes_1250.png>
-Package pdftex.def Info: figures/nodes_1250.png used on input line 95.
-(pdftex.def)             Requested size: 174.1282pt x 130.59647pt.
-
-Underfull \vbox (badness 6510) has occurred while \output is active []
+Underfull \vbox (badness 6110) has occurred while \output is active []
 
  [3
 
 ]
 [4 <C:/Users/miskinh/SkyDrive/Code/route_planner/figures/nodes_10.png> <C:/User
-s/miskinh/SkyDrive/Code/route_planner/figures/nodes_50.png> <C:/Users/miskinh/S
-kyDrive/Code/route_planner/figures/nodes_250.png> <C:/Users/miskinh/SkyDrive/Co
-de/route_planner/figures/nodes_1250.png>]
-<figures/exact_tsp_of_4_nodes.png, id=28, 578.16pt x 433.62pt>
-File: figures/exact_tsp_of_4_nodes.png Graphic file (type png)
+s/miskinh/SkyDrive/Code/route_planner/figures/nodes_25.png> <C:/Users/miskinh/S
+kyDrive/Code/route_planner/figures/nodes_50.png> <C:/Users/miskinh/SkyDrive/Cod
+e/route_planner/figures/nodes_100.png>]
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 120.
 
-<use figures/exact_tsp_of_4_nodes.png>
-Package pdftex.def Info: figures/exact_tsp_of_4_nodes.png used on input line 12
-4.
-(pdftex.def)             Requested size: 174.1282pt x 130.59647pt.
 
-<figures/exact_tsp_of_6_nodes.png, id=29, 578.16pt x 433.62pt>
-File: figures/exact_tsp_of_6_nodes.png Graphic file (type png)
-
-<use figures/exact_tsp_of_6_nodes.png>
-Package pdftex.def Info: figures/exact_tsp_of_6_nodes.png used on input line 12
-8.
-(pdftex.def)             Requested size: 174.1282pt x 130.59647pt.
-
-<figures/exact_tsp_of_8_nodes.png, id=30, 578.16pt x 433.62pt>
-File: figures/exact_tsp_of_8_nodes.png Graphic file (type png)
-
-<use figures/exact_tsp_of_8_nodes.png>
-Package pdftex.def Info: figures/exact_tsp_of_8_nodes.png used on input line 13
-2.
-(pdftex.def)             Requested size: 174.1282pt x 130.59647pt.
-
-<figures/exact_tsp_of_10_nodes.png, id=31, 578.16pt x 433.62pt>
-File: figures/exact_tsp_of_10_nodes.png Graphic file (type png)
-
-<use figures/exact_tsp_of_10_nodes.png>
-Package pdftex.def Info: figures/exact_tsp_of_10_nodes.png used on input line 1
-36.
-(pdftex.def)             Requested size: 174.1282pt x 130.59647pt.
-
-<figures/histogram_of_10_node_route_costs.png, id=32, 578.16pt x 433.62pt>
-File: figures/histogram_of_10_node_route_costs.png Graphic file (type png)
-
-<use figures/histogram_of_10_node_route_costs.png>
-Package pdftex.def Info: figures/histogram_of_10_node_route_costs.png used on i
-nput line 158.
-(pdftex.def)             Requested size: 174.1282pt x 130.59647pt.
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [5 <C:/Users/miskinh/SkyDrive/Code/route_planner/figures/exact_tsp_of_4_nodes.
-png> <C:/Users/miskinh/SkyDrive/Code/route_planner/figures/exact_tsp_of_6_nodes
-.png> <C:/Users/miskinh/SkyDrive/Code/route_planner/figures/exact_tsp_of_8_node
-s.png> <C:/Users/miskinh/SkyDrive/Code/route_planner/figures/exact_tsp_of_10_no
-des.png>]
-[6 <C:/Users/miskinh/SkyDrive/Code/route_planner/figures/histogram_of_10_node_r
-oute_costs.png>] (C:\Users\miskinh\SkyDrive\Code\route_planner\Report.aux)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\omscmr.fd"
+File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 120.
+ [5]
+(C:\Users\miskinh\SkyDrive\Code\route_planner\Report.aux)
 
 LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 3602 strings out of 493921
- 51370 string characters out of 3144869
- 106923 words of memory out of 3000000
- 6854 multiletter control sequences out of 15000+200000
+ 3599 strings out of 493921
+ 50908 string characters out of 3144869
+ 106961 words of memory out of 3000000
+ 6853 multiletter control sequences out of 15000+200000
  10159 words of font info for 38 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
- 27i,7n,32p,608b,249s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 27i,7n,32p,473b,249s stack positions out of 5000i,500n,10000p,200000b,50000s
 <C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb>
 <C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C
 :/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/P
 rogram Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Prog
-ram Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on Report.pdf (6 pages, 766131 bytes).
+ram Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Progra
+m Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti12.pfb>
+Output written on Report.pdf (5 pages, 340314 bytes).
 PDF statistics:
- 60 PDF objects out of 1000 (max. 8388607)
+ 51 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 46 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 21 words of extra memory for PDF output out of 10000 (max. 10000000)
 
