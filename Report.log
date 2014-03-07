@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (MiKTeX 2.9) (preloaded format=pdflatex 2013.11.30)  6 MAR 2014 19:31
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (MiKTeX 2.9) (preloaded format=pdflatex 2013.11.30)  7 MAR 2014 17:46
 entering extended mode
 **Report.tex
 (C:\Users\miskinh\SkyDrive\Code\route_planner\Report.tex
@@ -320,37 +320,177 @@ Underfull \vbox (badness 6110) has occurred while \output is active []
 s/miskinh/SkyDrive/Code/route_planner/figures/nodes_25.png> <C:/Users/miskinh/S
 kyDrive/Code/route_planner/figures/nodes_50.png> <C:/Users/miskinh/SkyDrive/Cod
 e/route_planner/figures/nodes_100.png>]
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 120.
+<figures/exact_tsp_of_4_nodes.png, id=28, 578.16pt x 433.62pt>
+File: figures/exact_tsp_of_4_nodes.png Graphic file (type png)
+
+<use figures/exact_tsp_of_4_nodes.png>
+Package pdftex.def Info: figures/exact_tsp_of_4_nodes.png used on input line 12
+6.
+(pdftex.def)             Requested size: 174.1282pt x 130.59647pt.
+
+<figures/exact_tsp_of_6_nodes.png, id=29, 578.16pt x 433.62pt>
+File: figures/exact_tsp_of_6_nodes.png Graphic file (type png)
+
+<use figures/exact_tsp_of_6_nodes.png>
+Package pdftex.def Info: figures/exact_tsp_of_6_nodes.png used on input line 13
+0.
+(pdftex.def)             Requested size: 174.1282pt x 130.59647pt.
+
+<figures/exact_tsp_of_8_nodes.png, id=30, 578.16pt x 433.62pt>
+File: figures/exact_tsp_of_8_nodes.png Graphic file (type png)
+
+<use figures/exact_tsp_of_8_nodes.png>
+Package pdftex.def Info: figures/exact_tsp_of_8_nodes.png used on input line 13
+4.
+(pdftex.def)             Requested size: 174.1282pt x 130.59647pt.
+
+<figures/exact_tsp_of_10_nodes.png, id=31, 578.16pt x 433.62pt>
+File: figures/exact_tsp_of_10_nodes.png Graphic file (type png)
+
+<use figures/exact_tsp_of_10_nodes.png>
+Package pdftex.def Info: figures/exact_tsp_of_10_nodes.png used on input line 1
+38.
+(pdftex.def)             Requested size: 174.1282pt x 130.59647pt.
+ [5 <C:/Users/miskinh/SkyDrive/Code/route_planner/figures/exact_tsp_of_4_nodes.
+png> <C:/Users/miskinh/SkyDrive/Code/route_planner/figures/exact_tsp_of_6_nodes
+.png> <C:/Users/miskinh/SkyDrive/Code/route_planner/figures/exact_tsp_of_8_node
+s.png> <C:/Users/miskinh/SkyDrive/Code/route_planner/figures/exact_tsp_of_10_no
+des.png>]
+<figures/histogram_of_10_node_route_costs.png, id=39, 578.16pt x 433.62pt>
+File: figures/histogram_of_10_node_route_costs.png Graphic file (type png)
+
+<use figures/histogram_of_10_node_route_costs.png>
+Package pdftex.def Info: figures/histogram_of_10_node_route_costs.png used on i
+nput line 193.
+(pdftex.def)             Requested size: 348.26306pt x 261.19295pt.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [6]
+<figures/progressive_tsp_of_10_nodes.png, id=43, 578.16pt x 433.62pt>
+File: figures/progressive_tsp_of_10_nodes.png Graphic file (type png)
+
+<use figures/progressive_tsp_of_10_nodes.png>
+Package pdftex.def Info: figures/progressive_tsp_of_10_nodes.png used on input 
+line 211.
+(pdftex.def)             Requested size: 174.1282pt x 130.59647pt.
+
+<figures/progressive_tsp_of_25_nodes.png, id=44, 578.16pt x 433.62pt>
+File: figures/progressive_tsp_of_25_nodes.png Graphic file (type png)
+
+<use figures/progressive_tsp_of_25_nodes.png>
+Package pdftex.def Info: figures/progressive_tsp_of_25_nodes.png used on input 
+line 215.
+(pdftex.def)             Requested size: 174.1282pt x 130.59647pt.
+
+<figures/progressive_tsp_of_50_nodes.png, id=45, 578.16pt x 433.62pt>
+File: figures/progressive_tsp_of_50_nodes.png Graphic file (type png)
+
+<use figures/progressive_tsp_of_50_nodes.png>
+Package pdftex.def Info: figures/progressive_tsp_of_50_nodes.png used on input 
+line 219.
+(pdftex.def)             Requested size: 174.1282pt x 130.59647pt.
+
+<figures/progressive_tsp_of_100_nodes.png, id=46, 578.16pt x 433.62pt>
+File: figures/progressive_tsp_of_100_nodes.png Graphic file (type png)
+
+<use figures/progressive_tsp_of_100_nodes.png>
+Package pdftex.def Info: figures/progressive_tsp_of_100_nodes.png used on input
+ line 223.
+(pdftex.def)             Requested size: 174.1282pt x 130.59647pt.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [7 <C:/Users/miskinh/SkyDrive/Code/route_planner/figures/histogram_of_10_node_
+route_costs.png>] [8 <C:/Users/miskinh/SkyDrive/Code/route_planner/figures/prog
+ressive_tsp_of_10_nodes.png> <C:/Users/miskinh/SkyDrive/Code/route_planner/figu
+res/progressive_tsp_of_25_nodes.png> <C:/Users/miskinh/SkyDrive/Code/route_plan
+ner/figures/progressive_tsp_of_50_nodes.png> <C:/Users/miskinh/SkyDrive/Code/ro
+ute_planner/figures/progressive_tsp_of_100_nodes.png>]
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 252.
 
 
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\omscmr.fd"
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 120.
- [5]
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 252.
+
+<figures/dubin_paths_comprised_of_turns_and_straight_line_segments.png, id=59, 
+578.16pt x 433.62pt>
+File: figures/dubin_paths_comprised_of_turns_and_straight_line_segments.png Gra
+phic file (type png)
+
+<use figures/dubin_paths_comprised_of_turns_and_straight_line_segments.png>
+Package pdftex.def Info: figures/dubin_paths_comprised_of_turns_and_straight_li
+ne_segments.png used on input line 263.
+(pdftex.def)             Requested size: 348.26306pt x 261.19295pt.
+
+<figures/dubin_paths_comprised_of_turns_start(0,_0)(0,_1)_end(2,_-1)(1,_0).png,
+ id=60, 578.16pt x 433.62pt>
+File: figures/dubin_paths_comprised_of_turns_start(0,_0)(0,_1)_end(2,_-1)(1,_0)
+.png Graphic file (type png)
+
+<use figures/dubin_paths_comprised_of_turns_start(0,_0)(0,_1)_end(2,_-1)(1,_0).
+png>
+Package pdftex.def Info: figures/dubin_paths_comprised_of_turns_start(0,_0)(0,_
+1)_end(2,_-1)(1,_0).png used on input line 272.
+(pdftex.def)             Requested size: 348.26306pt x 261.19295pt.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [9 <C:/Users/miskinh/SkyDrive/Code/route_planner/figures/dubin_paths_comprised
+_of_turns_and_straight_line_segments.png>]
+<figures/uav_node_order_and_route_for_a_10_node_latin_hypercube.png, id=66, 578
+.16pt x 433.62pt>
+File: figures/uav_node_order_and_route_for_a_10_node_latin_hypercube.png Graphi
+c file (type png)
+
+<use figures/uav_node_order_and_route_for_a_10_node_latin_hypercube.png>
+Package pdftex.def Info: figures/uav_node_order_and_route_for_a_10_node_latin_h
+ypercube.png used on input line 281.
+(pdftex.def)             Requested size: 348.26306pt x 261.19295pt.
+
+Underfull \vbox (badness 1748) has occurred while \output is active []
+
+ [10 <C:/Users/miskinh/SkyDrive/Code/route_planner/figures/dubin_paths_comprise
+d_of_turns_start(0,_0)(0,_1)_end(2,_-1)(1,_0).png> <C:/Users/miskinh/SkyDrive/C
+ode/route_planner/figures/uav_node_order_and_route_for_a_10_node_latin_hypercub
+e.png>]
+<figures/uav_node_order_and_route_for_a_20_node_latin_hypercube.png, id=72, 578
+.16pt x 433.62pt>
+File: figures/uav_node_order_and_route_for_a_20_node_latin_hypercube.png Graphi
+c file (type png)
+
+<use figures/uav_node_order_and_route_for_a_20_node_latin_hypercube.png>
+Package pdftex.def Info: figures/uav_node_order_and_route_for_a_20_node_latin_h
+ypercube.png used on input line 290.
+(pdftex.def)             Requested size: 348.26306pt x 261.19295pt.
+
+[11 <C:/Users/miskinh/SkyDrive/Code/route_planner/figures/uav_node_order_and_ro
+ute_for_a_20_node_latin_hypercube.png>]
 (C:\Users\miskinh\SkyDrive\Code\route_planner\Report.aux)
 
 LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 3599 strings out of 493921
- 50908 string characters out of 3144869
- 106961 words of memory out of 3000000
- 6853 multiletter control sequences out of 15000+200000
- 10159 words of font info for 38 fonts, out of 3000000 for 9000
+ 3669 strings out of 493921
+ 54361 string characters out of 3144869
+ 108004 words of memory out of 3000000
+ 6910 multiletter control sequences out of 15000+200000
+ 10457 words of font info for 39 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
- 27i,7n,32p,473b,249s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 27i,7n,32p,610b,251s stack positions out of 5000i,500n,10000p,200000b,50000s
 <C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb>
 <C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C
 :/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/P
 rogram Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Prog
 ram Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Progra
 m Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on Report.pdf (5 pages, 340314 bytes).
+Output written on Report.pdf (11 pages, 1198799 bytes).
 PDF statistics:
- 51 PDF objects out of 1000 (max. 8388607)
+ 97 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 21 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 86 words of extra memory for PDF output out of 10000 (max. 10000000)
 

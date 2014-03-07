@@ -202,25 +202,79 @@ def pathPlanning():
 		"LRL - Left Turn, Right Turn then Left Turn",
 		])
 
+	#plot examples of dubin paths with straight line segments
+	startNode,startDirection,endNode,endDirection,radius = (0,0),(0,1),(-4,-2),(1,0),1
+	pathTypes = ['RSR','LSL','RSL','LSR']#,'RLR','LRL']
+	paths = {}
+	for pathType in pathTypes:
+		distance,path = dubinPath.dubinPath(startNode,startDirection,endNode,endDirection,radius,pathType)
+		if path: paths["{0:s} - {1:0.1f}m".format(pathType,distance)]  = path
+	arrows={
+		"Start":[startNode[0],startNode[1],startDirection[0],startDirection[1]],
+		"End":[endNode[0],endNode[1],endDirection[0],endDirection[1]]
+		}
+	title = "Dubin Paths Comprised of Turns and Straight Line Segments"
+	filename = plot.path(paths,title,arrows=arrows)
+	dubinCSCRef = Report.figure(filename,title)
+
+	Report.paragraph("Figure {} shows the possible routes from the point {} in direction {} to the point {} in direction {}. The arrows symbolise the start and end headings and the different coloured route symbolise the different routes. In this example the routes comprise of maximum rate turns of radius {} and straight line segment. At close proximity these routes are not always possible".format(dubinCSCRef,startNode,startDirection,endNode,endDirection,radius))
+
+	#plot examples of paths with only turns
+	startNode,startDirection,endNode,endDirection,radius = (0,0),(0,1),(2,-1),(1,0),1
+	pathTypes = ['RLR','LRL']
+	paths = {}
+	for pathType in pathTypes:
+		distance,path = dubinPath.dubinPath(startNode,startDirection,endNode,endDirection,radius,pathType)
+		if path: paths["{0:s} - {1:0.1f}m".format(pathType,distance)]  = path
+	arrows={
+		"Start":[startNode[0],startNode[1],startDirection[0],startDirection[1]],
+		"End":[endNode[0],endNode[1],endDirection[0],endDirection[1]]
+		}
+	title = "Dubin Paths Comprised of Turns Start{}{} End{}{}".format(startNode,startDirection,endNode,endDirection)
+	filename = plot.path(paths,title,arrows=arrows)
+	dubinCCCRef = Report.figure(filename,title)
+
+	Report.paragraph("Figure {} shows the possible routes from the point {} in direction {} to the point {} in direction {}. The arrows symbolise the start and end headings and the different coloured route symbolise the different routes. In this example the routes only comprise of maximum rate turns of radius {}. These routes are only viable when the distance between points is $D<4r$ where $D$ symbolises the distance.".format(dubinCSCRef,startNode,startDirection,endNode,endDirection,radius))
 
 	nodesPerRoute = 4
 	numberOfPoint = 10
+	paths={}
+
 	nodes = latinHypercube(numberOfPoint)
 	bestRoute,bestCost = travellingPlane.progressiveRoute(nodes,nodesPerRoute)
 	orderedNodes = travellingPlane.orderNodes(nodes,bestRoute)
 	x,y,z = changeArray(orderedNodes)
-
-	plot.line3(x,y,z,show=True)
+	paths["Node Order"] = [x,y,z]
 
 	currentPath = dubinPath.DubinPath(planeData["Turn Radius"])
-
 	for node in orderedNodes:
 		currentPath.addNode(node)
+	paths["UAV Route"] = currentPath.getPath()
 
-	currentPath.plotPath()
+	title = "UAV node order and route for a {} node Latin Hypercube".format(numberOfPoint)
+	filename = plot.path3(paths,title)
+
+	uavRouteRef = Report.figure(filename,title)
+	Report.paragraph("Figure {} shows the optimal path and route for a UAV to circumnavigate a {} node Latin Hypercube. The route is calculated before the path and then the path is calculated from the heading at each node in the route.".format(uavRouteRef,numberOfPoint))
+
+	numberOfPoint = 20
+	paths={}
+	nodes = latinHypercube(numberOfPoint)
+	bestRoute,bestCost = travellingPlane.progressiveRoute(nodes,nodesPerRoute)
+	orderedNodes = travellingPlane.orderNodes(nodes,bestRoute)
+	x,y,z = changeArray(orderedNodes)
+	paths["Node Order"] = [x,y,z]
+	currentPath = dubinPath.DubinPath(planeData["Turn Radius"])
+	for node in orderedNodes:
+		currentPath.addNode(node)
+	paths["UAV Route"] = currentPath.getPath()
+	title = "UAV node order and route for a {} node Latin Hypercube".format(numberOfPoint)
+	filename = plot.path3(paths,title)
+	uavRouteRef = Report.figure(filename,title)
+	Report.paragraph("Figure {} shows the optimal path and route for a UAV to circumnavigate a {} node Latin Hypercube. The route is calculated before the path and then the path is calculated from the heading at each node in the route.".format(uavRouteRef,numberOfPoint))
 
 if __name__ == "__main__":
 	introduction()
-	# exactPlanning()
-	# progressivePlanning()
+	exactPlanning()
+	progressivePlanning()
 	pathPlanning()

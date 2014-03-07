@@ -439,11 +439,16 @@ class DubinPath():
 			
 			self.totalEnergy += energy
 
-	def plotPath(self):
-		"method to plot the path"
+	def getPath(self):
+		"method to add "
 
-		self.addNode(self.nodes[1])
-		return plot.line3(self.x,self.y,self.z,show=True)
+		if (all([self.nodes[-1][i] != self.nodes[0][i] for i in range(3)])):
+			self.addNode(self.nodes[0])
+
+		if (all([self.nodes[-1][i] != self.nodes[1][i] for i in range(3)])):
+			self.addNode(self.nodes[1])
+
+		return [self.x,self.y,self.z]
 
 if __name__ == "__main__":
 

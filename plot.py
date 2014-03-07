@@ -124,6 +124,54 @@ def line3(xAxis,yAxis,zAxis,title="",xLabel="x",yLabel="y",zLabel="z",show=False
 
 	return saveFigure(title,show)
 
+def path(paths,title="",xLabel="x",yLabel="y",arrows=None,show=False):
+	"function to plot the given paths"
+
+	figure = pyplot.figure(num=title)
+	axes = pyplot.axes()
+	pyplot.hold(True)
+	pyplot.title(title)
+
+	for label,data in paths.items():
+		[x,y,z] = data
+		axes.plot(x[:len(y)],y[:len(x)],label=label)
+
+	if arrows:
+		for label,data in arrows.items():
+			[x1,y1,x2,y2] = data
+			axes.arrow(x1,y1,x2,y2,head_width=0.1, fc='k', ec='k')
+
+	axes.set_xlabel(xLabel,fontsize=FONTSIZE)
+	axes.set_ylabel(yLabel,fontsize=FONTSIZE)
+	axes.set_title(title,fontsize=FONTSIZE)
+	axes.legend()
+	pyplot.hold(False)
+	pyplot.axis('equal')
+
+	return saveFigure(title,show)
+
+def path3(paths,title="",xLabel="x",yLabel="y",zLabel="z",show=False):
+	"method to plot the class data and if DEBUG = False save the figure"
+
+	matplotlib.rcParams['legend.fontsize'] = 10
+
+	figure = pyplot.figure(num=title)
+	pyplot.hold(True)
+	axes = Axes3D(figure)
+
+	for label,data in paths.items():
+		[x,y,z] = data
+		axes.plot(x, y, z, label=label)
+
+	pyplot.hold(False)
+	axes.set_xlabel(xLabel,fontsize=FONTSIZE)
+	axes.set_ylabel(yLabel,fontsize=FONTSIZE)
+	axes.set_zlabel(zLabel,fontsize=FONTSIZE)
+	axes.set_title(title,fontsize=FONTSIZE)
+	axes.legend()
+
+	return saveFigure(title,show)
+
 def scatter(xAxis,yAxis,title="",xLabel="x",yLabel="y",xTicks=None,yTicks=None,show=False):
 	"method to plot the class data and if DEBUG = False save the figure"
 
