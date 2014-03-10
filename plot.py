@@ -78,7 +78,7 @@ def pie(labels,values,title="",xLabel="",yLabel="",show=False):
 
 	return saveFigure(title,show)
 
-def line(xAxis,yAxis,title="",xLabel="",yLabel="",xTicks=None,yTicks=None,show=False):
+def line(xAxis,yAxis,title="",xLabel="x",yLabel="y",xTicks=None,yTicks=None,show=False):
 	"method to plot the class data and if DEBUG = False save the figure"
 
 	pyplot.figure(num=title)

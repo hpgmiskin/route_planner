@@ -1,0 +1,373 @@
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (MiKTeX 2.9) (preloaded format=pdflatex 2013.11.30)  10 MAR 2014 17:47
+entering extended mode
+**Report.tex
+(C:\Users\miskinh\SkyDrive\Code\route_planner\Report.tex
+LaTeX2e <2011/06/27>
+Babel <v3.8m> and hyphenation patterns for english, afrikaans, ancientgreek, ar
+abic, armenian, assamese, basque, bengali, bokmal, bulgarian, catalan, coptic, 
+croatian, czech, danish, dutch, esperanto, estonian, farsi, finnish, french, ga
+lician, german, german-x-2012-05-30, greek, gujarati, hindi, hungarian, iceland
+ic, indonesian, interlingua, irish, italian, kannada, kurmanji, latin, latvian,
+ lithuanian, malayalam, marathi, mongolian, mongolianlmc, monogreek, ngerman, n
+german-x-2012-05-30, nynorsk, oriya, panjabi, pinyin, polish, portuguese, roman
+ian, russian, sanskrit, serbian, slovak, slovenian, spanish, swedish, swissgerm
+an, tamil, telugu, turkish, turkmen, ukenglish, ukrainian, uppersorbian, usengl
+ishmax, welsh, loaded.
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\article.cls"
+Document Class: article 2007/10/19 v1.4h Standard LaTeX document class
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\size12.clo"
+File: size12.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@section=\count80
+\c@subsection=\count81
+\c@subsubsection=\count82
+\c@paragraph=\count83
+\c@subparagraph=\count84
+\c@figure=\count85
+\c@table=\count86
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\geometry\geometry.sty"
+Package: geometry 2010/09/12 v5.6 Page Geometry
+
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\graphics\keyval.sty"
+Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
+\KV@toks@=\toks14
+)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\oberdiek\ifpdf.sty"
+Package: ifpdf 2011/01/30 v2.3 Provides the ifpdf switch (HO)
+Package ifpdf Info: pdfTeX in PDF mode is detected.
+)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\oberdiek\ifvtex.sty"
+Package: ifvtex 2010/03/01 v1.5 Detect VTeX and its facilities (HO)
+Package ifvtex Info: VTeX not detected.
+)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\ifxetex\ifxetex.sty"
+Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
+)
+\Gm@cnth=\count87
+\Gm@cntv=\count88
+\c@Gm@tempcnt=\count89
+\Gm@bindingoffset=\dimen103
+\Gm@wd@mp=\dimen104
+\Gm@odd@mp=\dimen105
+\Gm@even@mp=\dimen106
+\Gm@layoutwidth=\dimen107
+\Gm@layoutheight=\dimen108
+\Gm@layouthoffset=\dimen109
+\Gm@layoutvoffset=\dimen110
+\Gm@dimlist=\toks15
+
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\geometry\geometry.cfg"))
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\graphics\graphicx.sty"
+Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\graphics\graphics.sty"
+Package: graphics 2009/02/05 v1.0o Standard LaTeX Graphics (DPC,SPQR)
+
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\graphics\trig.sty"
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\00miktex\graphics.cfg"
+File: graphics.cfg 2007/01/18 v1.5 graphics configuration of teTeX/TeXLive
+)
+Package graphics Info: Driver file: pdftex.def on input line 91.
+
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\pdftex-def\pdftex.def"
+File: pdftex.def 2011/05/27 v0.06d Graphics/color for pdfTeX
+
+("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\oberdiek\infwarerr.sty"
+Package: infwarerr 2010/04/08 v1.3 Providing info/warning/error messages (HO)
+)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\oberdiek\ltxcmds.sty"
+Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
+)
+\Gread@gobject=\count90
+))
+\Gin@req@height=\dimen111
+\Gin@req@width=\dimen112
+)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\float\float.sty"
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count91
+\float@exts=\toks16
+\float@box=\box26
+\@float@everytoks=\toks17
+\@floatcapt=\box27
+)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\ltxmisc\url.sty"
+\Urlmuskip=\muskip10
+Package: url 2006/04/12  ver 3.3  Verb mode for urls, etc.
+)
+(C:\Users\miskinh\AppData\Roaming\MiKTeX\2.9\tex\latex\listings\listings.sty
+\lst@mode=\count92
+\lst@gtempboxa=\box28
+\lst@token=\toks18
+\lst@length=\count93
+\lst@currlwidth=\dimen113
+\lst@column=\count94
+\lst@pos=\count95
+\lst@lostspace=\dimen114
+\lst@width=\dimen115
+\lst@newlines=\count96
+\lst@lineno=\count97
+\lst@maxwidth=\dimen116
+
+(C:\Users\miskinh\AppData\Roaming\MiKTeX\2.9\tex\latex\listings\lstmisc.sty
+File: lstmisc.sty 2013/08/26 1.5b (Carsten Heinz)
+\c@lstnumber=\count98
+\lst@skipnumbers=\count99
+\lst@framebox=\box29
+)
+(C:\Users\miskinh\AppData\Roaming\MiKTeX\2.9\tex\latex\listings\listings.cfg
+File: listings.cfg 2013/08/26 1.5b listings configuration
+))
+Package: listings 2013/08/26 1.5b (Carsten Heinz)
+
+(C:\Users\miskinh\AppData\Roaming\MiKTeX\2.9\tex\latex\subfigure\subfigure.sty
+Package: subfigure 2002/07/30 v2.1.4 subfigure package
+\subfigtopskip=\skip43
+\subfigcapskip=\skip44
+\subfigcaptopadj=\dimen117
+\subfigbottomskip=\skip45
+\subfigcapmargin=\dimen118
+\subfiglabelskip=\skip46
+\c@subfigure=\count100
+\c@lofdepth=\count101
+\c@subtable=\count102
+\c@lotdepth=\count103
+
+****************************************
+* Local config file subfigure.cfg used *
+****************************************
+(C:\Users\miskinh\AppData\Roaming\MiKTeX\2.9\tex\latex\subfigure\subfigure.cfg)
+\subfig@top=\skip47
+\subfig@bottom=\skip48
+) (C:\Users\miskinh\AppData\Roaming\MiKTeX\2.9\tex\latex\cite\cite.sty
+LaTeX Info: Redefining \cite on input line 302.
+LaTeX Info: Redefining \nocite on input line 373.
+Package: cite 2010/09/10  v 5.3
+)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\amsfonts\amssymb.sty"
+Package: amssymb 2013/01/14 v3.01 AMS font symbols
+
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\amsfonts\amsfonts.sty"
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
+\@emptytoks=\toks19
+\symAMSa=\mathgroup4
+\symAMSb=\mathgroup5
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
+))
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\ltxmisc\parskip.sty"
+Package: parskip 2001/04/09 non-zero parskip adjustments
+)
+(C:\Users\miskinh\AppData\Roaming\MiKTeX\2.9\tex\latex\setspace\setspace.sty
+Package: setspace 2011/12/19 v6.7a set line spacing
+)
+(C:\Users\miskinh\SkyDrive\Code\route_planner\Report.aux
+
+LaTeX Warning: Label `fig:10_nodes' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:10_nodes' multiply defined.
+
+
+LaTeX Warning: Label `tbl:comparison_of_route_calculation' multiply defined.
+
+)
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
+
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+*geometry* verbose mode - [ preamble ] result:
+* driver: pdftex
+* paper: a4paper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: twoside 
+* h-part:(L,W,R)=(108.12047pt, 435.32718pt, 54.06023pt)
+* v-part:(T,H,B)=(56.9055pt, 731.23584pt, 56.9055pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=435.32718pt
+* \textheight=731.23584pt
+* \oddsidemargin=35.85048pt
+* \evensidemargin=-18.20976pt
+* \topmargin=-52.36449pt
+* \headheight=12.0pt
+* \headsep=25.0pt
+* \topskip=12.0pt
+* \footskip=30.0pt
+* \marginparwidth=85.0pt
+* \marginparsep=10.0pt
+* \columnsep=10.0pt
+* \skip\footins=10.8pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidetrue
+* \@mparswitchtrue
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+(C:\Users\miskinh\AppData\Roaming\MiKTeX\2.9\tex\context\base\supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count104
+\scratchdimen=\dimen119
+\scratchbox=\box30
+\nofMPsegments=\count105
+\nofMParguments=\count106
+\everyMPshowfont=\toks20
+\MPscratchCnt=\count107
+\MPscratchDim=\dimen120
+\MPnumerator=\count108
+\makeMPintoPDFobject=\count109
+\everyMPtoPDFconversion=\toks21
+)
+\c@lstlisting=\count110
+LaTeX Font Info:    Try loading font information for U+msa on input line 26.
+ ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\amsfonts\umsa.fd"
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Try loading font information for U+msb on input line 26.
+
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\amsfonts\umsb.fd"
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+) [1
+
+
+{C:/Users/miskinh/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}]
+(C:\Users\miskinh\SkyDrive\Code\route_planner\Report.toc)
+\tf@toc=\write3
+ [2
+
+]
+<figures/nodes_10.png, id=11, 578.16pt x 433.62pt>
+File: figures/nodes_10.png Graphic file (type png)
+ <use figures/nodes_10.png>
+Package pdftex.def Info: figures/nodes_10.png used on input line 82.
+(pdftex.def)             Requested size: 191.54501pt x 143.65744pt.
+
+<figures/nodes_25.png, id=13, 578.16pt x 433.62pt>
+File: figures/nodes_25.png Graphic file (type png)
+ <use figures/nodes_25.png>
+Package pdftex.def Info: figures/nodes_25.png used on input line 86.
+(pdftex.def)             Requested size: 191.54501pt x 143.65744pt.
+
+<figures/nodes_50.png, id=14, 578.16pt x 433.62pt>
+File: figures/nodes_50.png Graphic file (type png)
+ <use figures/nodes_50.png>
+Package pdftex.def Info: figures/nodes_50.png used on input line 90.
+(pdftex.def)             Requested size: 191.54501pt x 143.65744pt.
+
+<figures/nodes_100.png, id=15, 578.16pt x 433.62pt>
+File: figures/nodes_100.png Graphic file (type png)
+
+<use figures/nodes_100.png>
+Package pdftex.def Info: figures/nodes_100.png used on input line 94.
+(pdftex.def)             Requested size: 191.54501pt x 143.65744pt.
+
+Underfull \vbox (badness 6110) has occurred while \output is active []
+
+ [3
+
+]
+[4 <C:/Users/miskinh/SkyDrive/Code/route_planner/figures/nodes_10.png> <C:/User
+s/miskinh/SkyDrive/Code/route_planner/figures/nodes_25.png> <C:/Users/miskinh/S
+kyDrive/Code/route_planner/figures/nodes_50.png> <C:/Users/miskinh/SkyDrive/Cod
+e/route_planner/figures/nodes_100.png>]
+<figures/exact_tsp_of_6_nodes.png, id=28, 578.16pt x 433.62pt>
+File: figures/exact_tsp_of_6_nodes.png Graphic file (type png)
+
+<use figures/exact_tsp_of_6_nodes.png>
+Package pdftex.def Info: figures/exact_tsp_of_6_nodes.png used on input line 12
+7.
+(pdftex.def)             Requested size: 191.54501pt x 143.65744pt.
+
+<figures/exact_tsp_of_8_nodes.png, id=29, 578.16pt x 433.62pt>
+File: figures/exact_tsp_of_8_nodes.png Graphic file (type png)
+
+<use figures/exact_tsp_of_8_nodes.png>
+Package pdftex.def Info: figures/exact_tsp_of_8_nodes.png used on input line 13
+1.
+(pdftex.def)             Requested size: 191.54501pt x 143.65744pt.
+
+<figures/exact_tsp_of_10_nodes.png, id=30, 578.16pt x 433.62pt>
+File: figures/exact_tsp_of_10_nodes.png Graphic file (type png)
+
+<use figures/exact_tsp_of_10_nodes.png>
+Package pdftex.def Info: figures/exact_tsp_of_10_nodes.png used on input line 1
+35.
+(pdftex.def)             Requested size: 191.54501pt x 143.65744pt.
+
+<figures/exact_tsp_of_12_nodes.png, id=31, 578.16pt x 433.62pt>
+File: figures/exact_tsp_of_12_nodes.png Graphic file (type png)
+
+<use figures/exact_tsp_of_12_nodes.png>
+Package pdftex.def Info: figures/exact_tsp_of_12_nodes.png used on input line 1
+39.
+(pdftex.def)             Requested size: 191.54501pt x 143.65744pt.
+ [5 <C:/Users/miskinh/SkyDrive/Code/route_planner/figures/exact_tsp_of_6_nodes.
+png> <C:/Users/miskinh/SkyDrive/Code/route_planner/figures/exact_tsp_of_8_nodes
+.png> <C:/Users/miskinh/SkyDrive/Code/route_planner/figures/exact_tsp_of_10_nod
+es.png> <C:/Users/miskinh/SkyDrive/Code/route_planner/figures/exact_tsp_of_12_n
+odes.png>]
+<figures/histogram_of_12_node_route_costs.png, id=39, 578.16pt x 433.62pt>
+File: figures/histogram_of_12_node_route_costs.png Graphic file (type png)
+
+<use figures/histogram_of_12_node_route_costs.png>
+Package pdftex.def Info: figures/histogram_of_12_node_route_costs.png used on i
+nput line 195.
+(pdftex.def)             Requested size: 348.26306pt x 261.19295pt.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [6]
+
+LaTeX Warning: Reference `fig:histogram_of_12_node_route_costs' on page 7 undef
+ined on input line 200.
+
+[7 <C:/Users/miskinh/SkyDrive/Code/route_planner/figures/histogram_of_12_node_r
+oute_costs.png>] (C:\Users\miskinh\SkyDrive\Code\route_planner\Report.aux)
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: There were multiply-defined labels.
+
+ ) 
+Here is how much of TeX's memory you used:
+ 3606 strings out of 493921
+ 51484 string characters out of 3144869
+ 107880 words of memory out of 3000000
+ 6858 multiletter control sequences out of 15000+200000
+ 10457 words of font info for 39 fonts, out of 3000000 for 9000
+ 841 hyphenation exceptions out of 8191
+ 27i,7n,32p,610b,251s stack positions out of 5000i,500n,10000p,200000b,50000s
+<C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb>
+<C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C
+:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/P
+rogram Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Prog
+ram Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti12.pfb>
+Output written on Report.pdf (7 pages, 618878 bytes).
+PDF statistics:
+ 65 PDF objects out of 1000 (max. 8388607)
+ 0 named destinations out of 1000 (max. 500000)
+ 46 words of extra memory for PDF output out of 10000 (max. 10000000)
+

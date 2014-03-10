@@ -1,0 +1,7 @@
+\contentsline {section}{\numberline {1}Introduction}{3}
+\contentsline {section}{\numberline {2}Plane Properties}{3}
+\contentsline {section}{\numberline {3}Energy Model}{3}
+\contentsline {section}{\numberline {4}Latin Hypercubes}{3}
+\contentsline {section}{\numberline {5}Route Planning}{4}
+\contentsline {subsection}{\numberline {5.1}Exact Travelling Salesman}{5}
+\contentsline {subsection}{\numberline {5.2}Improving Travelling Salesman}{6}

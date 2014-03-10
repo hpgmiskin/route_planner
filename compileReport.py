@@ -62,34 +62,35 @@ def exactPlanning():
 
 	sectionRefs["exact"] = Report.section("Exact Travelling Salesman","sub")
 
-	numberOfPoints = [4,6,8,10]
+	numberOfPoints = [6,8,10,12]
 	captions = []
 	filenames = []
 	exactResults = {"numberOfPoints":numberOfPoints,"numberOfRoutes":[],"computeTime":[],"bestCost":[]}
 	for numberOfPoint in numberOfPoints:
 		#load latin hypercube of given nodes
 		nodes = latinHypercube(numberOfPoint)
+		sortedNodes = sorted(nodes,key=lambda x:x[2])
+		startIndex = [i for i,node in enumerate(nodes) if all([node[j]==sortedNodes[0][j] for j in range(3)])][0]
+		endIndex = [i for i,node in enumerate(nodes) if all([node[j]==sortedNodes[1][j] for j in range(3)])][0]
+		print(startIndex,endIndex)
 		#time how long it takes to calculate all routes
 		tic = time.time()
-		routes,costs = travellingPlane.allRoutes(nodes)
+		routes,costs = travellingPlane.allRoutesStartEnd(nodes,startIndex,endIndex)
 		toc= time.time()
-		exactResults["numberOfRoutes"].append(len(routes))
-		computeTime = round(toc-tic,3)*1000
-		exactResults["computeTime"].append(computeTime)
-		#compute best cost
+		#compute best route and cost
 		bestCost = min(costs)
-		exactResults["bestCost"].append(round(bestCost,2))
-		#compute best route and obtain ordered nodes
 		bestRoute = routes[costs.index(bestCost)]
-		orderedNodes = travellingPlane.orderNodes(nodes,bestRoute)
-		[x,y,z] = changeArray(orderedNodes)
+		routes = None
+		#save results
+		exactResults["numberOfRoutes"].append(len(costs))
+		exactResults["computeTime"].append(round(toc-tic,3)*1000)
+		exactResults["bestCost"].append(round(bestCost,2))
+		#obtain ordered nodes
+		[x,y,z] = changeArray(travellingPlane.orderNodes(nodes,bestRoute,True))
 		#plot the resulting route
 		captions.append("{} Nodes".format(numberOfPoint))
 		filename = plot.line3(x,y,z,"Exact TSP of {} Nodes".format(numberOfPoint))
 		filenames.append(filename)
-
-	#clear old memory
-	routes = None
 
 	caption = "Exact routes calculated by travelling salesman"
 	exactFigureRef,exactFigureRefs = Report.figures(filenames,caption,captions)
@@ -116,7 +117,7 @@ def exactPlanning():
 		"Work through all nodes until no nodes are left without a route"
 		],"enumerate")
 
-	nodesPerRoutes = [2,3,4,5]
+	nodesPerRoutes = [2,3,4,5,6]
 	solutionLines = {}
 	progressiveResults = {"nodesPerRoutes":nodesPerRoutes,"computeTime":[],"bestRoute":[],"bestCost":[]}
 	#load latin hypercube of required nodes
@@ -274,7 +275,7 @@ def pathPlanning():
 	Report.paragraph("Figure {} shows the optimal path and route for a UAV to circumnavigate a {} node Latin Hypercube. The route is calculated before the path and then the path is calculated from the heading at each node in the route.".format(uavRouteRef,numberOfPoint))
 
 	#comparison of path and route lengths
-	numberOfPoints = [10,100,1000]
+	numberOfPoints = [10,20,100,1000]
 	captions = []
 	filenames = []
 	for numberOfPoint in numberOfPoints:
@@ -311,7 +312,11 @@ def pathPlanning():
 	title = "Comparison of Path Length and Route Length for Varying Turning Radius"
 	pathRouteRef,pathRouteRefs = Report.figures(filenames,title,captions)
 
-	Report.paragraph("Figure {:s} shows a number of comparisons between the path and route length. In these examples the research area is maintained constant whereas the turning radius is varied between 0% and {:%} of length of a side of the area that is being explored. This is assuming that the area of exploration is a cube thus has equal side lengths".format(pathRouteRef,turnPercent))
+	Report.paragraph("Figure {:s} shows a number of comparisons between the path and route length. In these examples the research area is maintained constant whereas the turning radius is varied between 0% and {:%} of length of a side of the area that is being explored. This is assuming that the area of exploration is a cube thus has equal side lengths.".format(pathRouteRef,turnPercent))
+
+	Report.paragraph("Figures {} and {} show that with fewer nodes in a path the affect of turning radius is less pronounced in terms of percentage of route length. To stay within a 10% margin of route error for a route bellow {} nodes requires the turning radius to be less than 8%. Figures {} and {} on the other hand show the requirement to not exceed a turning radius of 3% of the length of the research area to remain within 10% accuracy between route and path length.".format(pathRouteRefs[0],pathRouteRefs[1],numberOfPoints[1],pathRouteRefs[2],pathRouteRefs[3]))
+
+	Report.paragraph("In conclusion the actual path taken has a suffient affect on the total length of the route to consider it once the optimal paths have been computed however there is not the requirement to compute each option of the travelling salesman problem with the actual navigable path considered.")
 
 if __name__ == "__main__":
 	introduction()

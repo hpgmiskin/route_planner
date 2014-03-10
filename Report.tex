@@ -101,6 +101,7 @@ Figure \ref{fig:latin_hypercubes_with_varying_numbers_of_nodes} shows a number o
 For this project the idea is to follow this logic to utilise Latin Hypercubes:
 
 \begin{enumerate}
+\setlength{\itemsep}{-10pt}
 \item Specifiy area of interest to researcher
 \item Estimate number of nodes able to be circumnavigated given the UAV total energy and the area of sample space
 \item Fit Latin Hypercube of given nodes to sample area
@@ -120,10 +121,6 @@ Given a set of points within a sample space the next stage of the proceedings is
 \begin{figure}[H]
 	\centering
 	
-	\subfigure[4 Nodes]{
-		\includegraphics[width=0.44\textwidth]{figures/exact_tsp_of_4_nodes.png} 
-		\label{fig:4_nodes}
-	}
 	\subfigure[6 Nodes]{
 		\includegraphics[width=0.44\textwidth]{figures/exact_tsp_of_6_nodes.png} 
 		\label{fig:6_nodes}
@@ -136,6 +133,10 @@ Given a set of points within a sample space the next stage of the proceedings is
 		\includegraphics[width=0.44\textwidth]{figures/exact_tsp_of_10_nodes.png} 
 		\label{fig:10_nodes}
 	}
+	\subfigure[12 Nodes]{
+		\includegraphics[width=0.44\textwidth]{figures/exact_tsp_of_12_nodes.png} 
+		\label{fig:12_nodes}
+	}
 	\caption{Exact routes calculated by travelling salesman}
 	\label{fig:exact_routes_calculated_by_travelling_salesman}
 \end{figure}
@@ -145,10 +146,10 @@ Figure \ref{fig:exact_routes_calculated_by_travelling_salesman} shows the optima
 \begin{table}[width=\textwidth]
 \centering
     \begin{tabular}{lllll}
-    Number of points	& 4	& 6	& 8	& 10	\\
+    Number of points	& 6	& 8	& 10	& 12	\\
 Number of possible routes	& 24	& 720	& 40320	& 3628800	\\
-Computation time (ms)	& 0.0	& 5.0	& 311.0	& 33427.0	\\
-Best route cost (J)	& 110.38	& 106.71	& 106.72	& 108.76	\\
+Computation time (ms)	& 1.0	& 8.0	& 428.0	& 46204.0	\\
+Best route cost (J)	& 106.71	& 91.53	& 108.76	& 99.96	\\
 
     \end{tabular}
 \caption{Comparison of route calculation}
@@ -172,147 +173,7 @@ The progressive travelling salesman is an approach to computing a best guess rou
 \item Add first nodes of both routes to final route
 \item Consider lowest N nodes that are not in the final route and reitterate
 \item Work through all nodes until no nodes are left without a route
+
 \end{enumerate}
-
-\begin{table}[width=\textwidth]
-\centering
-    \begin{tabular}{lllll}
-    Nodes in each route	& 2	& 3	& 4	& 5	\\
-Computation time (ms)	& 2.0	& 3.0	& 52.0	& 4077.0	\\
-Best route cost (J)	& 120.49	& 115.48	& 115.48	& 114.79	\\
-
-    \end{tabular}
-\caption{Comparison of route calculation}
-\label{tbl:comparison_of_route_calculation}
-\end{table}
-
-Table \ref{tbl:comparison_of_route_calculation} shows the varying computation time for routes through a 10 node latin hypercube that have a differnet numbers of nodes in each route. This refers to the number of nodes that are consideered in each progressive itteration of the code.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.8\textwidth]{figures/histogram_of_10_node_route_costs.png} 
-\caption{Histogram of 10 node route costs}
-\label{fig:histogram_of_10_node_route_costs}
-\end{figure}
-
-Figure \ref{fig:histogram_of_10_node_route_costs} shows a histogram of differnt route costs for a 10 node latin hypercube. The lines on this histogram plot represent the best cost routes with different numbers of nodes in the route
-
-\subsection{Progressive Travelling Salesman}
-\label{sec:progressive_travelling_salesman}
-
-In section \ref{sec:progressive_travelling_salesman} a best guess approach to the travelling salesman was presented and compared with the exact results. Given the results were close to the optimum even when the progressive algorithem only considered 2 nodes in the route it can be brought forward to be considered in reference to larger route problems. In these routes 4 nodes are considered for both the up route and the down route are used at each stage of the progressive algorithm.
-
-\begin{figure}[H]
-	\centering
-	
-	\subfigure[10 Nodes]{
-		\includegraphics[width=0.44\textwidth]{figures/progressive_tsp_of_10_nodes.png} 
-		\label{fig:10_nodes}
-	}
-	\subfigure[25 Nodes]{
-		\includegraphics[width=0.44\textwidth]{figures/progressive_tsp_of_25_nodes.png} 
-		\label{fig:25_nodes}
-	}
-	\subfigure[50 Nodes]{
-		\includegraphics[width=0.44\textwidth]{figures/progressive_tsp_of_50_nodes.png} 
-		\label{fig:50_nodes}
-	}
-	\subfigure[100 Nodes]{
-		\includegraphics[width=0.44\textwidth]{figures/progressive_tsp_of_100_nodes.png} 
-		\label{fig:100_nodes}
-	}
-	\caption{Exact routes calculated by travelling salesman}
-	\label{fig:exact_routes_calculated_by_travelling_salesman}
-\end{figure}
-
-Figure \ref{fig:exact_routes_calculated_by_travelling_salesman} shows a number of optimal routes for varing numbers of nodes whos order is defined be the progressive travelling salesman algorithm. Though the 100 node route is difficult to see the exact routing the other routes show a logical approach to the routing problem
-
-\begin{table}[width=\textwidth]
-\centering
-    \begin{tabular}{lllll}
-    Number of points	& 10	& 25	& 50	& 100	\\
-Computation time (ms)	& 52.0	& 236.0	& 587.0	& 1325.0	\\
-Best route cost (J)	& 115.48	& 143.62	& 202.65	& 333.73	\\
-
-    \end{tabular}
-\caption{Comparison of progressive route calculation}
-\label{tbl:comparison_of_progressive_route_calculation}
-\end{table}
-
-Table \ref{tbl:comparison_of_progressive_route_calculation} shows the computation time and route cost for the differnt routing situations. The computation time is far bellow that of the exact travelling salesman algorithm due to the complexity of this problem being broken down into 4 node chunks
-
-\section{Path Planning}
-\label{sec:path_planning}
-
-The least energy route through a number of nodes has been defined however this route assumes that the UAV is able to turn on the spot and is not constricted by turning radius. Therefore to compute the actual energy cost of circumnavigating a route the turning radius of the UAV needs to be considered. Dubins paths are the minimum distance paths given a start and end direction.
-
-Duibins paths ar comprised of maximum rate turns and straight line segments. The following defines all the routes that are possible made op of maxiumum rate turns and straight line segments
-
-\begin{itemize}
-\setlength{\itemsep}{-20pt}
-\item RSR - Right Turn, Straight Flight then Right Turn
-\item RSL - Right Turn, Straight Flight then Left Turn
-\item LSR - Left Turn, Straight Flight then Right Turn
-\item LSL - Left Turn, Straight Flight then Left Turn
-\item RLR - Right Turn, Left Turn then Right Turn
-\item LRL - Left Turn, Right Turn then Left Turn
-\end{itemize}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.8\textwidth]{figures/dubin_paths_comprised_of_turns_and_straight_line_segments.png} 
-\caption{Dubin Paths Comprised of Turns and Straight Line Segments}
-\label{fig:dubin_paths_comprised_of_turns_and_straight_line_segments}
-\end{figure}
-
-Figure \ref{fig:dubin_paths_comprised_of_turns_and_straight_line_segments} shows the possible routes from the point (0, 0) in direction (0, 1) to the point (-4, -2) in direction (1, 0). The arrows symbolise the start and end headings and the different coloured route symbolise the different routes. In this example the routes comprise of maximum rate turns of radius 1 and straight line segment. At close proximity these routes are not always possible
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.8\textwidth]{figures/dubin_paths_comprised_of_turns.png} 
-\caption{Dubin Paths Comprised of Turns}
-\label{fig:dubin_paths_comprised_of_turns}
-\end{figure}
-
-Figure \ref{fig:dubin_paths_comprised_of_turns_and_straight_line_segments} shows the possible routes from the point (0, 0) in direction (0, 1) to the point (2, -1) in direction (1, 0). The arrows symbolise the start and end headings and the different coloured route symbolise the different routes. In this example the routes only comprise of maximum rate turns of radius 1. These routes are only viable when the distance between points is $D<4r$ where $D$ symbolises the distance.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.8\textwidth]{figures/uav_node_order_and_route_for_a_10_node_latin_hypercube.png} 
-\caption{UAV node order and route for a 10 node Latin Hypercube}
-\label{fig:uav_node_order_and_route_for_a_10_node_latin_hypercube}
-\end{figure}
-
-Figure \ref{fig:uav_node_order_and_route_for_a_10_node_latin_hypercube} shows the optimal path and route for a UAV to circumnavigate a 10 node Latin Hypercube. The route is calculated before the path and then the path is calculated from the heading at each node in the route.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.8\textwidth]{figures/uav_node_order_and_route_for_a_20_node_latin_hypercube.png} 
-\caption{UAV node order and route for a 20 node Latin Hypercube}
-\label{fig:uav_node_order_and_route_for_a_20_node_latin_hypercube}
-\end{figure}
-
-Figure \ref{fig:uav_node_order_and_route_for_a_20_node_latin_hypercube} shows the optimal path and route for a UAV to circumnavigate a 20 node Latin Hypercube. The route is calculated before the path and then the path is calculated from the heading at each node in the route.
-
-\begin{figure}[H]
-	\centering
-	
-	\subfigure[10 Node Route]{
-		\includegraphics[width=0.3\textwidth]{figures/path_and_route_length_for_10_nodes_with_varyed_turning_radius.png} 
-		\label{fig:10_node_route}
-	}
-	\subfigure[100 Node Route]{
-		\includegraphics[width=0.3\textwidth]{figures/path_and_route_length_for_100_nodes_with_varyed_turning_radius.png} 
-		\label{fig:100_node_route}
-	}
-	\subfigure[1000 Node Route]{
-		\includegraphics[width=0.3\textwidth]{figures/path_and_route_length_for_1000_nodes_with_varyed_turning_radius.png} 
-		\label{fig:1000_node_route}
-	}
-	\caption{Comparison of Path Length and Route Length for Varying Turning Radius}
-	\label{fig:comparison_of_path_length_and_route_length_for_varying_turning_radius}
-\end{figure}
-
-Figure \ref{fig:comparison_of_path_length_and_route_length_for_varying_turning_radius} shows a number of comparisons between the path and route length. In these examples the research area is maintained constant whereas the turning radius is varied between 0% and 10.000000% of length of a side of the area that is being explored. This is assuming that the area of exploration is a cube thus has equal side lengths
 
 \end{document}

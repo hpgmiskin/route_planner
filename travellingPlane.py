@@ -82,7 +82,7 @@ def progressiveRoute(nodes,nodesPerRoute=4):
 
 	return bestRoute,bestCost
 
-def allRoutes(nodes,startIndex=None,endIndex=None):
+def allRoutes(nodes):
 	"function to compute and return all possible route combinations and the resulting costs"
 
 	numberNodes = len(nodes)
@@ -94,13 +94,27 @@ def allRoutes(nodes,startIndex=None,endIndex=None):
 	routes,costs = [],[]
 	for route in itertools.permutations(nodeIndexs):
 
-		# if startIndex:
-		# 	if (startIndex != route[0]):
-		# 		continue
+		cost = routeCost(route,True)
+		routes.append(route)
+		costs.append(cost)
 
-		# if endIndex:
-		# 	if (endIndex != route[-1]):
-		# 		continue
+	return routes,costs
+
+def allRoutesStartEnd(nodes,startIndex=None,endIndex=None):
+	"function to compute and return all possible route combinations and the resulting costs"
+
+	numberNodes = len(nodes)
+	nodeIndexs = list(range(0,numberNodes))
+	nodeIndexs.pop(startIndex)
+	nodeIndexs.pop(endIndex)
+
+	nodes = [numpy.array(node) for node in nodes]
+	setEnergyMatrix(nodes)
+
+	routes,costs = [],[]
+	for route in itertools.permutations(nodeIndexs):
+
+		route = [startIndex]+[index for index in route]+[endIndex]
 
 		cost = routeCost(route,True)
 		routes.append(route)
