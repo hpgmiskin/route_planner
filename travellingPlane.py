@@ -108,7 +108,7 @@ def allRoutes(nodes,startIndex=None,endIndex=None):
 
 	return routes,costs
 
-def orderNodes(nodes,order):
+def orderNodes(nodes,order,loop=False):
 	"function to order the given nodes and return along with the final node to produce a route"
 
 	orderedNodes = []
@@ -116,9 +116,27 @@ def orderNodes(nodes,order):
 	for index in order:
 		orderedNodes.append(nodes[index])
 
-	orderedNodes.append(nodes[order[0]])
+	if loop:
+		orderedNodes.append(nodes[order[0]])
 
 	return orderedNodes
+
+def routeDistance(nodes,loop=False):
+	"calculates the distance to navigate all nodes"
+
+	totalDistance = 0
+
+	for i in range(len(nodes)-1):
+		vector = nodes[i+1]-nodes[i]
+		distance = numpy.linalg.norm(vector)
+		totalDistance += distance
+
+	if loop:
+		vector = nodes[0]-nodes[-1]
+		distance = numpy.linalg.norm(vector)
+		totalDistance += distance
+
+	return totalDistance
 
 def routeCost(route,loop=False):
 	"calculates the cost of a route given a route (sequence of nodes)"

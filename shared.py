@@ -112,7 +112,7 @@ def latinHypercube(numberPoints):
                 if (len(node) == 3):
                     nodes.append(node)
 
-        return nodes
+        return [numpy.array(node) for node in nodes]
 
     try:
         open(filePath)

@@ -90,9 +90,14 @@ def line(xAxis,yAxis,title="",xLabel="",yLabel="",xTicks=None,yTicks=None,show=F
 		xAxis = numpy.arange(len(xAxis))
 
 	if (type(yAxis) == dict):
+		yMin,yMax = 0,0
 		for name,data in sorted(yAxis.items(),key=lambda x:x[0]):
+			yMin = min(data+[yMin])
+			yMax = max(data+[yMax])
 			pyplot.plot(xAxis[:len(data)],data[:len(xAxis)],label=name)
 	elif (type(yAxis) == list):
+		yMin = min(yAxis)
+		yMax = max(yAxis)
 		pyplot.plot(xAxis[:len(yAxis)],yAxis[:len(xAxis)],label="")
 	else:
 		raise ValueError("Plot expected list or dictionary for yAxis")
@@ -102,6 +107,8 @@ def line(xAxis,yAxis,title="",xLabel="",yLabel="",xTicks=None,yTicks=None,show=F
 
 	pyplot.xlabel(xLabel,fontsize=FONTSIZE)
 	pyplot.ylabel(yLabel,fontsize=FONTSIZE)
+	ySpace = (yMax-yMin)*0.05
+	pyplot.ylim((yMin-ySpace,yMax+ySpace))
 	pyplot.legend(fontsize=FONTSIZE)
 	pyplot.hold(False)
 

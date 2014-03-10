@@ -32,8 +32,14 @@ def drawArc(centre,startPoint,endPoint,direction):
 	radiusA = numpy.linalg.norm(startPoint-centre)
 	radiusB = numpy.linalg.norm(endPoint-centre)
 
-	if (round(radiusA,2) != round(radiusB,2)):
-		raise RuntimeWarning("The given start point {} and end point {} do not lie on the circle with centre {}".format(startPoint,endPoint,centre))
+	# if (round(radiusA,2) != round(radiusB,2)):
+	# 	pyplot.hold(True)
+	# 	drawCircle(centre,radiusA)
+	# 	drawCircle(centre,radiusB)
+	# 	pyplot.scatter([startPoint[0],endPoint[0]],[startPoint[1],endPoint[1]])
+	# 	pyplot.hold(False)
+	# 	pyplot.show()
+	# 	raise RuntimeWarning("The given start point {} and end point {} do not lie on the circle with centre {}".format(startPoint,endPoint,centre))
 	
 	radius = max(radiusA,radiusB)
 	
@@ -282,7 +288,7 @@ def combinePaths(heights,distances,paths):
 				newHeight = previousHeight+stepSize
 			z.append(newHeight)
 
-	return totalDistance,[x,y,z]
+	return (totalDistance,totalHeight),[x,y,z]
 	
 
 def dubinPath(startPoint,startDirection,endPoint,endDirection,radius,pathType):
@@ -312,9 +318,9 @@ def dubinPath(startPoint,startDirection,endPoint,endDirection,radius,pathType):
 		print(endPoint,endPoint+endDirection)
 		drawLine(endPoint,endPoint+endDirection)
 
-	if (all([item==0 for item in startDirection]) or all([item==0 for item in endDirection])):
-		print(startDirection,endDirection)
-		raise ValueError("Start Directions must not all be negative")
+	# if (all([item==0 for item in startDirection]) or all([item==0 for item in endDirection])):
+	# 	print(startDirection,endDirection)
+	# 	raise ValueError("Start Directions must not all be negative")
 
 	minDistance = numpy.linalg.norm(endPoint-startPoint)
 	distance = 0
@@ -328,12 +334,13 @@ def dubinPath(startPoint,startDirection,endPoint,endDirection,radius,pathType):
 
 		if (None in [startTangent,endTangent]):
 			distance = numpy.infty
+			height = None
 			path = None
 		else:
 			distance1,path1 = drawArc(startCentre,startPoint,startTangent,pathType[0])
 			distance2,path2 = drawLine(startTangent,endTangent)
 			distance3,path3 = drawArc(endCentre,endTangent,endPoint,pathType[2])
-			distance,path = combinePaths([startHeight,endHeight],[distance1,distance2,distance3],[path1,path2,path3])
+			(distance,height),path = combinePaths([startHeight,endHeight],[distance1,distance2,distance3],[path1,path2,path3])
 
 	elif (pathType in ['RLR','LRL']):
 
@@ -343,15 +350,16 @@ def dubinPath(startPoint,startDirection,endPoint,endDirection,radius,pathType):
 
 		if None in [startTangent,endTangent,middleCentre]:
 			distance = numpy.infty
+			height = None
 			path = None
 		elif all([round(startCentre[i],2) == round(endCentre[i],2) for i in [0,1]]):
 			distance,path = drawArc(startCentre,startPoint,endPoint,pathType[0])
-			distance,path = combinePaths([startHeight,endHeight],[distance],[path])
+			(distance,height),path = combinePaths([startHeight,endHeight],[distance],[path])
 		else:
 			distance1,path1 = drawArc(startCentre,startPoint,startTangent,pathType[0])
 			distance2,path2 = drawArc(middleCentre,startTangent,endTangent,pathType[1])
 			distance3,path3 = drawArc(endCentre,endTangent,endPoint,pathType[2])
-			distance,path = combinePaths([startHeight,endHeight],[distance1,distance2,distance3],[path1,path2,path3])
+			(distance,height),path = combinePaths([startHeight,endHeight],[distance1,distance2,distance3],[path1,path2,path3])
 
 	else:
 		raise ValueError("Path type {} is not in list ['RSR','LSL','RSL','LSR','RLR','LRL']".format(pathType))
@@ -361,33 +369,12 @@ def dubinPath(startPoint,startDirection,endPoint,endDirection,radius,pathType):
 		pyplot.axis('equal')
 		pyplot.show()
 
-	return distance,path
+	return (distance,height),path
 
 def bestPath(startPoint,startDirection,endPoint,endDirection,radius):
 	"computes the length of the best dubin path and returns route of the shortest"
 
-	height = 0
 	bestDistance = numpy.infty
-
-	# #is given matrixs are in 3 dimensions correct for height
-	# if (max(len(startPoint),len(endPoint)) > 2):
-
-	# 	#calculate height gain
-	# 	height = endPoint[2]-startPoint[2]
-
-	# 	#print(startPoint,startDirection,endPoint,endDirection)
-
-	# 	#reduce to 2D planning problem
-	# 	startPoint = startPoint[:2]
-	# 	startDirection = startDirection[:2]
-	# 	endPoint = endPoint[:2]
-	# 	endDirection = endDirection[:2]
-
-	# 	#check height change not too great
-	# 	maxDistance = numpy.linalg.norm(endPoint-startPoint) + 2*radius*numpy.pi
-	# 	if (calculateEnergy(maxDistance,height) == numpy.infty):
-	# 		return numpy.infty,None
-
 
 	#cycle through options calculating distance
 	for pathType in ['RSR','LSL','RSL','LSR','RLR','LRL']:
@@ -395,23 +382,27 @@ def bestPath(startPoint,startDirection,endPoint,endDirection,radius):
 		if DEBUG: print(pathType)
 
 		#print(startPoint,startDirection,endPoint,endDirection)
-		distance,path = dubinPath(startPoint,startDirection,endPoint,endDirection,radius,pathType)
+		(distance,height),path = dubinPath(startPoint,startDirection,endPoint,endDirection,radius,pathType)
 		
 		if (distance < bestDistance):
 			bestPath = path
 			bestDistance = distance
+			bestHeight = height
 
-	distance = numpy.linalg.norm([distance,height])
+	bestDistance = numpy.linalg.norm([bestDistance,bestHeight])
 
-	return calculateEnergy(distance,height),bestPath
+	return (bestDistance,bestHeight),bestPath
 
 class DubinPath():
 	"""DubinPath is a class to enable calculation and plotting of the minimum length route through multiple nodes"""
 
-	def __init__(self, turnRadius):
-		self.turnRadius = turnRadius
-		self.totalEnergy = 0
+	def __init__(self, radius):
+		self.radius = radius
+		self.distance = 0
+		self.climb = 0
+		self.decend = 0
 		self.nodes = []
+		self.lastNodes = [None,None]
 
 		self.x,self.y,self.z = [],[],[]
 		
@@ -428,26 +419,52 @@ class DubinPath():
 			startDirection = startNode - previousNode
 			endDirection = endNode - startNode
 
-			# print("Node",startNode,endNode)
-			# print("Direction",startDirection,endDirection)
-
-			energy,path = bestPath(startNode,startDirection,endNode,endDirection,self.turnRadius)
+			(distance,height),path = bestPath(startNode,startDirection,endNode,endDirection,self.radius)
 
 			self.x += path[0]
 			self.y += path[1]
 			self.z += path[2]
 			
-			self.totalEnergy += energy
+			self.distance += distance
+
+			if (height > 0):
+				self.climb += height
+			elif (height < 0):
+				self.decend += height
+
+		elif (nodeCount>1):
+			self.lastNodes[1] = node
+		elif (nodeCount>0):
+			self.lastNodes[0] = node
+
+	def makeLoop(self):
+		"method to complete the paths loop"
+
+		for i in range(len(self.lastNodes)):
+			if self.lastNodes[i] != None:
+				# print(self.lastNodes[i])
+				self.addNode(self.lastNodes[i])
+				# print(self.lastNodes[i])
+				self.lastNodes[i] = None
+
+		# if not (all([self.nodes[-1][i] == self.nodes[0][i] for i in range(3)])):
+		# 	self.addNode(self.nodes[0])
+
+		# if not (all([self.nodes[-1][i] == self.nodes[1][i] for i in range(3)])):
+		# 	self.addNode(self.nodes[1])
+
+	def getDistance(self):
+		"method to return the distance of the path"
+
+		self.makeLoop()
+		#print(self.climb,self.decend)
+		return self.distance
 
 	def getPath(self):
-		"method to add "
+		"method to return the points of the path "
 
-		if (all([self.nodes[-1][i] != self.nodes[0][i] for i in range(3)])):
-			self.addNode(self.nodes[0])
-
-		if (all([self.nodes[-1][i] != self.nodes[1][i] for i in range(3)])):
-			self.addNode(self.nodes[1])
-
+		self.makeLoop()
+		#print(self.climb,self.decend)
 		return [self.x,self.y,self.z]
 
 if __name__ == "__main__":

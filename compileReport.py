@@ -42,7 +42,7 @@ def introduction():
 		filenames.append(filename)
 		captions.append("{} Nodes".format(numberOfPoint))
 	caption = "Latin Hypercubes with Varying Numbers of Nodes"
-	latinFigureRef,LatinFigureRefs = Report.figures(caption,captions,filenames)
+	latinFigureRef,LatinFigureRefs = Report.figures(filenames,caption,captions)
 
 	Report.paragraph("Figure {} shows a number of latin hypercubes with differnt numbers of nodes. All the Latin Hypercubes are within a unit cube. For collection of data in a required area these cubes can be stretched to fill the desired space. This does not provide an even spacing in each direction however means that eeach vertex of data collection is equally considered.".format(latinFigureRef))
 	Report.paragraph("For this project the idea is to follow this logic to utilise Latin Hypercubes:")
@@ -92,7 +92,7 @@ def exactPlanning():
 	routes = None
 
 	caption = "Exact routes calculated by travelling salesman"
-	exactFigureRef,exactFigureRefs = Report.figures(caption,captions,filenames)
+	exactFigureRef,exactFigureRefs = Report.figures(filenames,caption,captions)
 	Report.paragraph("Figure {} shows the optimal routes for differnt numbers of nodes. These optimal routes are found by computing the exact cost of each and every route option. Although this yield the shortest routes this approach is not efficient in terms of the computation time required.".format(exactFigureRef))
 
 	exactTableRef = Report.table("Comparison of route calculation",[
@@ -169,7 +169,7 @@ def progressivePlanning():
 		progressiveResults["computeTime"].append(computeTime)
 		progressiveResults["bestCost"].append(round(bestCost,2))
 		#obtain ordered nodes from best route
-		orderedNodes = travellingPlane.orderNodes(nodes,bestRoute)
+		orderedNodes = travellingPlane.orderNodes(nodes,bestRoute,True)
 		[x,y,z] = changeArray(orderedNodes)
 		#plot the resulting route
 		captions.append("{} Nodes".format(numberOfPoint))
@@ -177,7 +177,7 @@ def progressivePlanning():
 		filenames.append(filename)
 
 	caption = "Exact routes calculated by travelling salesman"
-	progressiveFigureRef,progressiveFigureRefs = Report.figures(caption,captions,filenames)
+	progressiveFigureRef,progressiveFigureRefs = Report.figures(filenames,caption,captions)
 	Report.paragraph("Figure {} shows a number of optimal routes for varing numbers of nodes whos order is defined be the progressive travelling salesman algorithm. Though the {} node route is difficult to see the exact routing the other routes show a logical approach to the routing problem".format(progressiveFigureRef,numberOfPoint))
 
 	progressiveTableRef = Report.table("Comparison of progressive route calculation",[
@@ -207,7 +207,7 @@ def pathPlanning():
 	pathTypes = ['RSR','LSL','RSL','LSR']#,'RLR','LRL']
 	paths = {}
 	for pathType in pathTypes:
-		distance,path = dubinPath.dubinPath(startNode,startDirection,endNode,endDirection,radius,pathType)
+		(distance,height),path = dubinPath.dubinPath(startNode,startDirection,endNode,endDirection,radius,pathType)
 		if path: paths["{0:s} - {1:0.1f}m".format(pathType,distance)]  = path
 	arrows={
 		"Start":[startNode[0],startNode[1],startDirection[0],startDirection[1]],
@@ -224,13 +224,13 @@ def pathPlanning():
 	pathTypes = ['RLR','LRL']
 	paths = {}
 	for pathType in pathTypes:
-		distance,path = dubinPath.dubinPath(startNode,startDirection,endNode,endDirection,radius,pathType)
+		(distance,height),path = dubinPath.dubinPath(startNode,startDirection,endNode,endDirection,radius,pathType)
 		if path: paths["{0:s} - {1:0.1f}m".format(pathType,distance)]  = path
 	arrows={
 		"Start":[startNode[0],startNode[1],startDirection[0],startDirection[1]],
 		"End":[endNode[0],endNode[1],endDirection[0],endDirection[1]]
 		}
-	title = "Dubin Paths Comprised of Turns Start{}{} End{}{}".format(startNode,startDirection,endNode,endDirection)
+	title = "Dubin Paths Comprised of Turns"
 	filename = plot.path(paths,title,arrows=arrows)
 	dubinCCCRef = Report.figure(filename,title)
 
@@ -272,6 +272,46 @@ def pathPlanning():
 	filename = plot.path3(paths,title)
 	uavRouteRef = Report.figure(filename,title)
 	Report.paragraph("Figure {} shows the optimal path and route for a UAV to circumnavigate a {} node Latin Hypercube. The route is calculated before the path and then the path is calculated from the heading at each node in the route.".format(uavRouteRef,numberOfPoint))
+
+	#comparison of path and route lengths
+	numberOfPoints = [10,100,1000]
+	captions = []
+	filenames = []
+	for numberOfPoint in numberOfPoints:
+		#configure nodes and route
+		nodes = latinHypercube(numberOfPoint)
+		bestRoute,bestCost = travellingPlane.progressiveRoute(nodes,nodesPerRoute)
+		nodes = travellingPlane.orderNodes(nodes,bestRoute)
+		routeDistance = travellingPlane.routeDistance(nodes,True)
+		x,y,z = changeArray(nodes)
+
+		#vary radius and calculate changing route
+		numberOfTest = 100
+		turnPercent = 0.1
+		radiuses = numpy.linspace(0,turnPercent,numberOfTest)
+		pathDistances = numpy.zeros(numberOfTest)
+		for i in range(numberOfTest):
+			currentPath = dubinPath.DubinPath(radiuses[i])
+			for node in nodes:
+				currentPath.addNode(node)
+			pathDistances[i] = currentPath.getDistance()
+			path = currentPath.getPath()
+		
+		#Plot Results
+		xAxis = radiuses
+		yAxis = {
+			"Route":[routeDistance for i in range(numberOfTest)],
+			"Route +5%":[routeDistance*1.05 for i in range(numberOfTest)],
+			"Route +10%":[routeDistance*1.1 for i in range(numberOfTest)],
+			"Path":pathDistances}
+		title = "Path and Route Length for {} Nodes with Varyed Turning Radius".format(numberOfPoint)
+		captions.append("{} Node Route".format(numberOfPoint))
+		filenames.append(plot.line(xAxis,yAxis,title,xLabel="Turning Radius/Side Length of Research Volume",yLabel="Path Length (m)"))
+
+	title = "Comparison of Path Length and Route Length for Varying Turning Radius"
+	pathRouteRef,pathRouteRefs = Report.figures(filenames,title,captions)
+
+	Report.paragraph("Figure {:s} shows a number of comparisons between the path and route length. In these examples the research area is maintained constant whereas the turning radius is varied between 0% and {:%} of length of a side of the area that is being explored. This is assuming that the area of exploration is a cube thus has equal side lengths".format(pathRouteRef,turnPercent))
 
 if __name__ == "__main__":
 	introduction()

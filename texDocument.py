@@ -130,10 +130,10 @@ $text
 
 		return figureRef
 
-	def figures(self,caption,captions,filenames):
+	def figures(self,filenames,caption="",captions=None):
 		"method to add a 4x4 figure to the LaTeX document"
 
-		figure4 = Template(r"""
+		figuresContent = Template(r"""
 \begin{figure}[H]
 	\centering
 	$subFigures
@@ -144,24 +144,34 @@ $text
 
 		subFigure = Template(r"""
 	\subfigure[$caption]{
-		\includegraphics[width=0.4\textwidth]{$filename} 
+		\includegraphics[width=$width\textwidth]{$filename} 
 		\label{fig:$label}
 	}""")
 
+		if not (len(filenames)%2):
+			width = 0.44
+		elif not (len(filenames)%3):
+			width = 0.3
+		else:
+			width = 0.8
+
 		subFigures = ""
-		figure4Refs = []
+		figureRefs = []
+
+		if (captions == None):
+			captions = [""]*len(filenames)
 
 		for i,filename in enumerate(filenames):
 			label = captions[i].replace(" ","_").lower()
-			subFigures += subFigure.substitute(caption=captions[i],filename=filename,label=label)
-			figure4Refs.append(Template(r"\ref{fig:$label}").substitute(label=label))
+			subFigures += subFigure.substitute(caption=captions[i],filename=filename,label=label,width=width)
+			figureRefs.append(Template(r"\ref{fig:$label}").substitute(label=label))
 
 		label = caption.replace(" ","_").lower()
-		figure4 = figure4.substitute(subFigures=subFigures,label=label,caption=caption)
-		self.updateTex(figure4)
+		figuresContent = figuresContent.substitute(subFigures=subFigures,label=label,caption=caption)
+		self.updateTex(figuresContent)
 
 		figureRef= Template(r"\ref{fig:$label}").substitute(label=label)
-		return figureRef,figure4Refs
+		return figureRef,figureRefs
 
 
 	def table(self,name,table,centering="c"):
@@ -226,6 +236,7 @@ $equation
 
 		listContent = Template(r"""
 \begin{$listType}
+\setlength{\itemsep}{-10pt}
 $listItems
 \end{$listType}
 """)
