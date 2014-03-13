@@ -1,0 +1,15 @@
+\section{Aims}
+The aim of this project is to research, design and implement a UAV path planner that minimises energy consumption while maintaining optimal spread and depth of data collection. The approach taken in this project to tackling this aim requires a path planner that suffices both of these requirements.
+\begin{itemize}
+\item  Initial path planning given a defined area of interest.
+\item Path planning to provide a minimum energy path given required waypoints.
+\end{itemize}
+
+\section{Objectives}
+The following objectives define the measurable goals of the project required to fully complete the aim. The objectives are listed in the order in which they are to be completed, where each objective is a prerequisite to the next.
+\begin{enumerate}
+\item Design a model to calculate the energy costs of flight between two points in a time invariant wind vector field. This model will output the predicted energy required from the: work done against drag and the change in gravitational energy.
+\item Implement an algorithm that uses the energy model to calculate the most efficient ordering of given waypoints to result in the least energy consumed over the tour. 
+\item Test the resulting algorithm using a number of data sets with the aim of reducing both the energy consumed and statistical maximum volume within the area of interest that does not have a data point.
+\item Design a flight planning algorithm that uses the initial way-point order as a basis to optimise on the same parameters as objective two and return an exact flight path that adheres to the UAV properties (max range and minimum turn radius.  
+\end{enumerate}

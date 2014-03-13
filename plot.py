@@ -1,11 +1,14 @@
-import numpy,matplotlib
+import numpy,matplotlib,itertools
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import pyplot
+from shared import naturalKeys
 
 FONTSIZE = 10
 
 def saveFigure(title,show):
 	"function to save or show the current figure given the title"
+
+	pyplot.autoscale(enable=True, axis='both', tight=True)
 
 	if show:
 		pyplot.show()
@@ -13,7 +16,7 @@ def saveFigure(title,show):
 		return None
 	else:
 		filename = "figures/{}.png".format(title.replace(" ","_").lower())
-		pyplot.savefig(filename)
+		pyplot.savefig("report/"+filename)
 		pyplot.close("all")
 		return filename
 
@@ -30,8 +33,8 @@ def histogram(data,title="",xLabel="Value",yLabel="Frequency",lines=None,numberB
 	pyplot.ylabel(yLabel,fontsize=FONTSIZE)
 
 	if lines:
-		for name,line in sorted(lines.items(),key=lambda x:x[0],reverse=True):
-			pyplot.plot([line,line],[0,maxFrequency],label=name,linewidth=0.5)
+		for name,line in sorted(lines.items(),key=lambda x:naturalKeys(x[0]),reverse=True):
+			pyplot.plot([line,line],[0,maxFrequency],label=name,linewidth=1)
 		pyplot.legend()
 
 	pyplot.hold(False)
@@ -91,7 +94,7 @@ def line(xAxis,yAxis,title="",xLabel="x",yLabel="y",xTicks=None,yTicks=None,show
 
 	if (type(yAxis) == dict):
 		yMin,yMax = 0,0
-		for name,data in sorted(yAxis.items(),key=lambda x:x[0]):
+		for name,data in sorted(yAxis.items(),key=lambda x:naturalKeys(x[0])):
 			yMin = min(data+[yMin])
 			yMax = max(data+[yMax])
 			pyplot.plot(xAxis[:len(data)],data[:len(xAxis)],label=name)
@@ -121,8 +124,11 @@ def line3(xAxis,yAxis,zAxis,title="",xLabel="x",yLabel="y",zLabel="z",show=False
 
 	figure = pyplot.figure(num=title)
 	axes = Axes3D(figure)
+	# axes.set_aspect('equal')
 
 	axes.plot(xAxis, yAxis, zAxis, label=title)
+	#scaleBox(axes,xAxis, yAxis, zAxis)
+	
 	axes.set_xlabel(xLabel,fontsize=FONTSIZE)
 	axes.set_ylabel(yLabel,fontsize=FONTSIZE)
 	axes.set_zlabel(zLabel,fontsize=FONTSIZE)
@@ -165,10 +171,13 @@ def path3(paths,title="",xLabel="x",yLabel="y",zLabel="z",show=False):
 	figure = pyplot.figure(num=title)
 	pyplot.hold(True)
 	axes = Axes3D(figure)
+	#axes.set_aspect('equal')
 
 	for label,data in paths.items():
 		[x,y,z] = data
 		axes.plot(x, y, z, label=label)
+
+	#scaleBox(axes,x, y, z)
 
 	pyplot.hold(False)
 	axes.set_xlabel(xLabel,fontsize=FONTSIZE)
@@ -179,31 +188,53 @@ def path3(paths,title="",xLabel="x",yLabel="y",zLabel="z",show=False):
 
 	return saveFigure(title,show)
 
-def scatter(xAxis,yAxis,title="",xLabel="x",yLabel="y",xTicks=None,yTicks=None,show=False):
+def scatter(xAxis,yAxis,title="",xLabel="x",yLabel="y",xTicks=None,yTicks=None,lines=None,show=False):
 	"method to plot the class data and if DEBUG = False save the figure"
 
 	pyplot.figure(num=title)
+	axes = pyplot.axes()
 	pyplot.hold(True)
 	pyplot.title(title,fontsize=FONTSIZE)
+
+	maxValue = 0
+	minValue = numpy.infty
 
 	if (type(xAxis[0]) == str):
 		xTicks = xAxis
 		xAxis = numpy.arange(len(xAxis))
 
 	if (type(yAxis) == dict):
-		for name,data in sorted(yAxis.items(),key=lambda x:x[0]):
-			pyplot.scatter(xAxis[:len(data)],data[:len(xAxis)],label=name)
+		colours = itertools.cycle(["b","g","r","c","m","y","k"])
+		for name,data in sorted(yAxis.items(),key=lambda x:naturalKeys(x[0])):
+			minValue = min(data+[minValue])
+			maxValue = max(data+[maxValue])
+			axes.scatter(xAxis[:len(data)],data[:len(xAxis)],label=name,color=next(colours))
 	elif (type(yAxis) == list):
-		pyplot.scatter(xAxis[:len(yAxis)],yAxis[:len(xAxis)],label="")
+		axes.scatter(xAxis[:len(yAxis)],yAxis[:len(xAxis)],label="")
 	else:
 		raise ValueError("Plot expected list or dictionary for yAxis")
 
 	if xTicks:
-		pyplot.xticks(xAxis, xTicks, rotation=0)
+		axes.xticks(xAxis, xTicks, rotation=0)
 
-	pyplot.xlabel(xLabel,fontsize=FONTSIZE)
-	pyplot.ylabel(yLabel,fontsize=FONTSIZE)
-	pyplot.legend(fontsize=FONTSIZE)
+	axes.set_xlabel(xLabel,fontsize=FONTSIZE)
+	axes.set_ylabel(yLabel,fontsize=FONTSIZE)
+	axes.set_title(title,fontsize=FONTSIZE)
+	handles, labels = axes.get_legend_handles_labels()
+	l1 = axes.legend(handles,labels,loc=4,fontsize=FONTSIZE)
+
+	if lines:
+		for name,line in sorted(lines.items(),key=lambda x:naturalKeys(x[0])):
+			axes.plot(line[0],line[1],label=name,linewidth=1)
+		handles2, labels2 = axes.get_legend_handles_labels()
+
+		for i in range(len(handles)):
+			handles2.remove(handles[i])
+			labels2.remove(labels[i])
+
+		l2 = axes.legend(handles2,labels2,loc=2,fontsize=FONTSIZE)
+		pyplot.gca().add_artist(l1)
+
 	pyplot.hold(False)
 
 	return saveFigure(title,show)
@@ -211,12 +242,15 @@ def scatter(xAxis,yAxis,title="",xLabel="x",yLabel="y",xTicks=None,yTicks=None,s
 def scatter3(xAxis,yAxis,zAxis,title="",xLabel="x",yLabel="y",zLabel="z",show=False):
 	"method to plot the class data and if DEBUG = False save the figure"
 
-	matplotlib.rcParams['legend.fontsize'] = 10
+	matplotlib.rcParams['legend.fontsize'] = FONTSIZE
 
 	figure = pyplot.figure(num=title)
 	axes = Axes3D(figure)
+	#axes.set_aspect('equal')
 	
 	axes.scatter(xAxis, yAxis, zAxis, label=title)
+	#scaleBox(axes,xAxis, yAxis, zAxis)
+
 	axes.set_xlabel(xLabel,fontsize=FONTSIZE)
 	axes.set_ylabel(yLabel,fontsize=FONTSIZE)
 	axes.set_zlabel(zLabel,fontsize=FONTSIZE)
@@ -224,6 +258,22 @@ def scatter3(xAxis,yAxis,zAxis,title="",xLabel="x",yLabel="y",zLabel="z",show=Fa
 	axes.legend(fontsize=FONTSIZE)
 
 	return saveFigure(title,show)
+
+def scaleBox(axes,xAxis,yAxis,zAxis):
+	"plots a invisible scale box to correct the aspect ratio"
+
+	pyplot.hold(True)
+
+	# Create cubic bounding box to simulate equal aspect ratio
+	max_range = numpy.array([max(xAxis)-min(xAxis), max(yAxis)-min(yAxis), max(zAxis)-min(zAxis)]).max()
+	Xb = 0.5*max_range*numpy.mgrid[-1:2:2,-1:2:2,-1:2:2][0].flatten() + 0.5*(max(xAxis)+min(xAxis))
+	Yb = 0.5*max_range*numpy.mgrid[-1:2:2,-1:2:2,-1:2:2][1].flatten() + 0.5*(max(yAxis)+min(yAxis))
+	Zb = 0.5*max_range*numpy.mgrid[-1:2:2,-1:2:2,-1:2:2][2].flatten() + 0.5*(max(zAxis)+min(zAxis))
+	# Comment or uncomment following both lines to test the fake bounding box:
+	for xb, yb, zb in zip(Xb, Yb, Zb):
+	   axes.plot([xb], [yb], [zb], 'w')
+
+	pyplot.hold(False)
 
 if (__name__ == "__main__"):
 

@@ -15,7 +15,7 @@ def progressiveRoute(nodes,nodesPerRoute=4):
 
 	#assign start and end points for total route
 	routeA = [sortedIndexs[0]]
-	routeB = [sortedIndexs[1]]
+	routeB = [sortedIndexs[0]]
 
 	#work through dataset
 	for i in range(0,numberNodes,2):
@@ -29,7 +29,7 @@ def progressiveRoute(nodes,nodesPerRoute=4):
 		#remove nodes already in route
 		for node in routeA[:-1]:
 			currentIndexs.remove(node)
-		for node in routeB[:-1]:
+		for node in routeB[1:-1]:
 			currentIndexs.remove(node)
 
 		#if there are fewer nodes left than totalRouteNodes
@@ -77,7 +77,7 @@ def progressiveRoute(nodes,nodesPerRoute=4):
 			routeB.append(bestRouteB[1])
 
 	routeB.reverse()
-	bestRoute = routeA+routeB
+	bestRoute = routeA+routeB[:-1]
 	bestCost = routeCost(bestRoute,True)
 
 	return bestRoute,bestCost
@@ -129,23 +129,18 @@ def routeDistance(nodes,loop=False):
 	"calculates the distance to navigate all nodes"
 
 	totalDistance = 0
-	totalHeight = 0
 
 	for i in range(len(nodes)-1):
 		vector = nodes[i+1]-nodes[i]
 		distance = numpy.linalg.norm(vector)
-		height = vector[2]
 		totalDistance += distance
-		totalHeight += abs(height)
 
 	if loop:
 		vector = nodes[0]-nodes[-1]
 		distance = numpy.linalg.norm(vector)
-		height = vector[2]
 		totalDistance += distance
-		totalHeight += abs(height)
 
-	return totalDistance,totalHeight/2
+	return totalDistance
 
 def routeCost(route,loop=False):
 	"calculates the cost of a route given a route (sequence of nodes)"
@@ -194,44 +189,50 @@ def routePermutations(indexs,startIndex=None,endIndex=None):
 	return permutations
 
 def doubleRoutePermutations(indexs,nodeA=None,nodeB=None):
-    """function to display the possible permutation sets for 2 routes
-    starting at node index nodeA and node index nodeB in set indexs"""
+	"""function to display the possible permutation sets for 2 routes
+	starting at node index nodeA and node index nodeB in set indexs"""
 
-    numberNodes = len(indexs)
+	numberNodes = len(indexs)
 
-    if (numberNodes%2 != 0):
-        raise ValueError("N needs to be an even number of indexs, {} is not even".format(numberNodes)) 
-    routeLength = numberNodes//2
+	if (numberNodes%2 != 0):
+		raise ValueError("N needs to be an even number of indexs, {} is not even".format(numberNodes)) 
+	routeLength = numberNodes//2
 
-    permutationA=[]
-    permutationB=[]
+	permutationA=[]
+	permutationB=[]
 
-    for item in itertools.permutations(indexs,routeLength):
+	for item in itertools.permutations(indexs,routeLength):
 
-        if ((nodeA == item[0]) or (nodeA == None)):
-            permutationA.append(item)
-        elif ((nodeB == item[0]) or (nodeB == None)):
-            permutationB.append(item)
+		if (nodeA == item[0]) and (nodeB == item[0]):
+			permutationA.append(item)
+			permutationB.append(item[1:])
+		elif ((nodeA == item[0]) or (nodeA == None)):
+			permutationA.append(item)
+		elif ((nodeB == item[0]) or (nodeB == None)):
+			permutationB.append(item)
 
-    def checkRoutes(routeA,routeB):
-        """checks the given routes to see if any indexs are repeated
+	def checkRoutes(routeA,routeB):
+		"""checks the given routes to see if any indexs are repeated
 
-        returns True if exclusive
-        returns False if any repetition
-        """
+		returns True if exclusive
+		returns False if any repetition
+		"""
 
-        for node in routeA:
-            if (node in routeB):
-                return False
+		for node in routeA:
+			if (node in routeB):
+				return False
 
-        return True
+		return True
 
-    permutations = []
+	permutations = []
 
-    for routeA in permutationA:
-        for routeB in permutationB:
+	for routeA in permutationA:
+		for routeB in permutationB:
 
-            if checkRoutes(routeA,routeB):
-                permutations.append([routeA,routeB])
+			if checkRoutes(routeA,routeB):
+				permutations.append([routeA,routeB])
 
-    return permutations
+	if (nodeA == nodeB):
+		permutations = [(permutationA,tuple([nodeB]+[item for item in permutationB])) for permutationA,permutationB in permutations]
+
+	return permutations

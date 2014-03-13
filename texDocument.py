@@ -1,5 +1,5 @@
 #LaTeX Writing
-
+import re
 from string import Template
 
 class TexDocument():
@@ -15,6 +15,7 @@ class TexDocument():
 	def updateTex(self,content):
 		"method to update the Tex Document with the given content"
 
+		content = re.subn(r"([^\\])%",r"\1\%",content)[0]
 		self.document += content
 
 		fileContent = Template(r"""
@@ -38,7 +39,7 @@ $document
 \usepackage{url}
 \usepackage{listings}
 \usepackage{subfigure}
-\usepackage{cite}
+\usepackage[noadjust]{cite}
 \usepackage{amssymb}
 \usepackage{parskip}
 \usepackage{setspace}
@@ -236,7 +237,7 @@ $equation
 
 		listContent = Template(r"""
 \begin{$listType}
-\setlength{\itemsep}{-10pt}
+\setlength{\itemsep}{-12pt}
 $listItems
 \end{$listType}
 """)
@@ -249,3 +250,13 @@ $listItems
 
 		listContent = listContent.substitute(listType=listType,listItems=listItems)
 		self.updateTex(listContent)
+
+	def bibliography(self):
+		"method to insert a bibliography into the tex document"
+
+		content = r"""\newpage
+\bibliographystyle{unsrt}
+\bibliography{references}
+\newpage"""
+
+		self.updateTex(content)
