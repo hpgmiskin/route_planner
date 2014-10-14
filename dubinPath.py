@@ -1,50 +1,40 @@
-#code to calculate and plot dubin paths
-
 from shared import *
 import numpy,plot
-import matplotlib.pyplot as pyplot
 
-DEBUG = False
-
-def drawLine(startPoint,endPoint):
+def linePath(startPoint,endPoint,distanceOnly=True):
 	"draws a line with the given start and end points"
 
 	startPoint = numpy.array(startPoint)
 	endPoint = numpy.array(endPoint)
 	distance = numpy.linalg.norm(endPoint - startPoint)
 
+	if distanceOnly:
+		return distance
+
 	x = [startPoint[0],endPoint[0]]
 	y = [startPoint[1],endPoint[1]]
-	path = [x,y]
+	z = [startPoint[2],endPoint[2]]
 
-	# pyplot.hold(True)
-	# pyplot.plot(x,y)
+	mode = "straight"
+	height = endPoint[2]-startPoint[2]
+	path = [x,y,z]
 
-	return distance,path
+	return (mode,distance,height,path)
 
-def drawArc(centre,startPoint,endPoint,direction):
+def arcPath(centre,startPoint,endPoint,direction,distanceOnly=True):
 	"draws an arc with the given centre and radius given the start and end points"
 
 	centre = numpy.array(centre)
 	startPoint = numpy.array(startPoint)
 	endPoint = numpy.array(endPoint)
 
-	radiusA = numpy.linalg.norm(startPoint-centre)
-	radiusB = numpy.linalg.norm(endPoint-centre)
-
-	# if (round(radiusA,2) != round(radiusB,2)):
-	# 	pyplot.hold(True)
-	# 	drawCircle(centre,radiusA)
-	# 	drawCircle(centre,radiusB)
-	# 	pyplot.scatter([startPoint[0],endPoint[0]],[startPoint[1],endPoint[1]])
-	# 	pyplot.hold(False)
-	# 	pyplot.show()
-	# 	raise RuntimeWarning("The given start point {} and end point {} do not lie on the circle with centre {}".format(startPoint,endPoint,centre))
-	
+	#2D problem 
+	radiusA = numpy.linalg.norm(startPoint[:2]-centre)
+	radiusB = numpy.linalg.norm(endPoint[:2]-centre)
 	radius = max(radiusA,radiusB)
 	
-	[X1,Y1] = startPoint - centre
-	[X2,Y2] = endPoint - centre
+	[X1,Y1] = startPoint[:2] - centre
+	[X2,Y2] = endPoint[:2] - centre
 	startAngle = numpy.arctan2(Y1,X1)
 	endAngle = numpy.arctan2(Y2,X2)
 
@@ -56,36 +46,27 @@ def drawArc(centre,startPoint,endPoint,direction):
 	theta = abs(startAngle - endAngle)
 	distance = radius*theta
 
-	thetas = numpy.linspace(startAngle,endAngle,100)
+	if distanceOnly:
+		return distance
+
+	#compute path
+	N = 50
+	thetas = numpy.linspace(startAngle,endAngle,N)
 	x = centre[0] + radius*numpy.cos(thetas)
 	y = centre[1] + radius*numpy.sin(thetas)
-	path = [x,y]
 
-	# xScatter = [centre[0],startPoint[0],endPoint[0]]
-	# yScatter = [centre[1],startPoint[1],endPoint[1]]
+	#3D results
+	z = numpy.linspace(startPoint[2],endPoint[2],N)
+	mode = "turn"
+	height = endPoint[2]-startPoint[2]
+	distance = numpy.sqrt(distance**2+height**2)
+	path = [x,y,z]
 
-	# pyplot.hold(True)
-	# pyplot.scatter(xScatter,yScatter)
-	# pyplot.plot(x,y)
-
-	return distance,path
-
-def drawCircle(centre,radius):
-	"function to draw a circle"
-
-	theta = numpy.linspace(0,2*numpy.pi,100)
-
-	x = centre[0] + radius*numpy.cos(theta)
-	y = centre[1] + radius*numpy.sin(theta)
-
-	pyplot.plot(x,y)
-	pyplot.axis('equal')
+	return (mode,distance,height,path)
 
 def tangentLines(centre1,centre2,radius,pathType):
 	"""returns the tangent points between two circles with given orientation
-
-	From document: http://gieseanw.files.wordpress.com/2012/10/dubins.pdf
-	By Andy Giese
+	logic from document: http://gieseanw.files.wordpress.com/2012/10/dubins.pdf By Andy Giese
 	"""
 
 	#assign both radius to the same
@@ -98,10 +79,6 @@ def tangentLines(centre1,centre2,radius,pathType):
 	#compute connecting vector
 	vector = centre1 - centre2
 	distance = numpy.linalg.norm(vector)
-
-	#return None if distance is too small
-	if False:#(distance < 4*radius):
-		return None,None
 	
 	#define tangent points based on configuration
 	if (pathType == "LSL"):
@@ -141,23 +118,15 @@ def tangentLines(centre1,centre2,radius,pathType):
 		point1 = centre1 + normal*radius1
 		point2 = centre2 - normal*radius2
 
-	if DEBUG:
-		drawCircle(centre1,radius1)
-		drawCircle(centre2,radius2)
-		drawLine(point1,point2)
-
-	if (all(numpy.isnan(point1)) and all(numpy.isnan(point2))):
-		if DEBUG:
-			print("Path Type {} is not possible for inputs".format(pathType))
+	if (all(numpy.isnan(point1)) or all(numpy.isnan(point2))):
+		if DEBUG: print("Path Type {} is not possible for inputs".format(pathType))
 		return None,None
 
 	return point1,point2
 
 def tangentCircles(centre1,centre2,radius,pathType):
 	"""returns the tangent points between three circles 
-
-	From document: http://gieseanw.files.wordpress.com/2012/10/dubins.pdf
-	By Andy Giese
+	logic from document: http://gieseanw.files.wordpress.com/2012/10/dubins.pdf By Andy Giese
 	"""
 
 	#convert to numpy array for calculation
@@ -192,33 +161,23 @@ def tangentCircles(centre1,centre2,radius,pathType):
 	startTangent = centre1 + vector2*radius
 	endTangent = centre2 + vector3*radius
 
-	if DEBUG:
-		drawCircle(centre1,radius)
-		drawCircle(centre2,radius)
-		drawCircle(centre3,radius)
-		pyplot.scatter(startTangent[0],startTangent[1])
-		pyplot.scatter(endTangent[0],endTangent[1])
-
 	return startTangent,endTangent,centre3
 
 def computeVector(vector,angle):
 	"computes and returns the normal vector given a vector and angle"
 
 	cosAngle = numpy.cos(angle)
-
 	[v_x,v_y] = vector
 	n_x = (v_x * cosAngle) - (v_y * numpy.sqrt(1-cosAngle**2))
 	n_y = (v_x * numpy.sqrt(1-cosAngle**2)) + (v_y * cosAngle)
 	normal = numpy.array([n_x,n_y])
 	normal = computeUnitVector(normal)
-
 	return normal
 
 def computeUnitVector(vector):
 	"computes and returns the unit vector of the given vector: vector"
 
 	normal = numpy.linalg.norm(vector)
-
 	if (normal == 0):
 		return numpy.array([0]*len(vector))
 	else:
@@ -226,11 +185,10 @@ def computeUnitVector(vector):
 
 def computeCentre(point,direction,radius,orientation):
 	"""computes the centre point of a circle given:
-
 	point - the coordinates of a point that lies on the circumfrence of a circle
 	direction - the direction of heading that is tangential to the circle at the point
 	radius - the radius of the circle
-	orientation - weatehr the circle is left or right direction
+	orientation - weather the circle is left or right turn
 	"""
 
 	[x,y] = point
@@ -246,161 +204,127 @@ def computeCentre(point,direction,radius,orientation):
 		normal = computeVector(-direction,numpy.pi/2)
 		centre = point + radius*normal
 
-	if DEBUG:
-		pyplot.hold(True)
-		pyplot.scatter(x,y)
-		drawLine(point,point+direction)
-		#drawCircle(centre,radius)
-
 	return centre
-
-def combinePaths(heights,distances,paths):
-	"computes and retruns the altered path given the inputs"
-
-	totalDistance = sum(distances)
-	[startHeight,endHeight] = heights
-	totalHeight = endHeight - startHeight
 	
-	heights = []
-	# print(totalHeight)
-
-	for distance in distances:
-		heightChange = totalHeight*distance/totalDistance
-		heights.append(heightChange)
-
-	x,y,z=[],[],[]
-	for i,path in enumerate(paths):
-		stepCount = len(path[0])
-		# print(stepCount)
-		stepSize = heights[i]/(stepCount-1)
-		# print(stepSize)
-
-		for j in range(stepCount):
-			x.append(paths[i][0][j])
-			y.append(paths[i][1][j])
-			if (len(z) == 0):
-				previousHeight = startHeight
-			else:
-				previousHeight = z[-1]
-			if (j == 0):
-				newHeight = previousHeight
-			else:
-				newHeight = previousHeight+stepSize
-			z.append(newHeight)
-
-	return (totalDistance,totalHeight),[x,y,z]
-	
-
-def dubinPath(startPoint,startDirection,endPoint,endDirection,radius,pathType):
-	"""
-	computes the lengths of the 6 options of dubin paths:
-
-	['RSR','LSL','RSL','LSR','RLR','LRL']
-
-	and plots each path before selecting the shortest path
+def dubinDistance(startPoint,startDirection,endPoint,endDirection,radius,pathType):
+	""" computes the lengths of any of the 6 options of dubin paths:
+	['RSR','LSL','RSL','LSR','RLR','LRL'] and returns details of each stage of travel and path
 	"""
 
-	if ((len(startPoint) > 2) and (len(endPoint) > 2)):
-		startHeight = startPoint[2]
-		endHeight = endPoint[2]
-	else:
-		startHeight = 0
-		endHeight = 0
-
-	startPoint = numpy.array(startPoint[:2])
-	endPoint = numpy.array(endPoint[:2])
-	startDirection = numpy.array(startDirection[:2])
-	endDirection = numpy.array(endDirection[:2])
-
-	if DEBUG:
-		print(startPoint,startPoint+startDirection)
-		drawLine(startPoint,startPoint+startDirection)
-		print(endPoint,endPoint+endDirection)
-		drawLine(endPoint,endPoint+endDirection)
-
-	# if (all([item==0 for item in startDirection]) or all([item==0 for item in endDirection])):
-	# 	print(startDirection,endDirection)
-	# 	raise ValueError("Start Directions must not all be negative")
-
-	minDistance = numpy.linalg.norm(endPoint-startPoint)
-	distance = 0
-	path = []
-
+	distances = []
 	if (pathType in ['RSR','LSL','RSL','LSR']):
 
-		startCentre = computeCentre(startPoint,startDirection,radius,pathType[0])
-		endCentre = computeCentre(endPoint,endDirection,radius,pathType[2])
-		startTangent,endTangent = tangentLines(startCentre,endCentre,radius,pathType)
+		startCentre = computeCentre(startPoint[:2],startDirection[:2],radius,pathType[0])
+		endCentre = computeCentre(endPoint[:2],endDirection[:2],radius,pathType[2])
+		startTangent,endTangent = tangentLines(startCentre[:2],endCentre[:2],radius,pathType)
 
 		if (None in [startTangent,endTangent]):
-			distance = numpy.infty
-			height = None
-			path = None
+			distances = None
 		else:
-			distance1,path1 = drawArc(startCentre,startPoint,startTangent,pathType[0])
-			distance2,path2 = drawLine(startTangent,endTangent)
-			distance3,path3 = drawArc(endCentre,endTangent,endPoint,pathType[2])
-			(distance,height),path = combinePaths([startHeight,endHeight],[distance1,distance2,distance3],[path1,path2,path3])
+			distances.append(arcPath(startCentre,startPoint,startTangent,pathType[0]))
+			distances.append(linePath(startTangent,endTangent))
+			distances.append(arcPath(endCentre,endTangent,endPoint,pathType[2]))
 
 	elif (pathType in ['RLR','LRL']):
 
-		startCentre = computeCentre(startPoint,startDirection,radius,pathType[0])
-		endCentre = computeCentre(endPoint,endDirection,radius,pathType[2])
-		startTangent,endTangent,middleCentre = tangentCircles(startCentre,endCentre,radius,pathType)
+		startCentre = computeCentre(startPoint[:2],startDirection[:2],radius,pathType[0])
+		endCentre = computeCentre(endPoint[:2],endDirection[:2],radius,pathType[2])
+		startTangent,endTangent,middleCentre = tangentCircles(startCentre[:2],endCentre[:2],radius,pathType)
 
 		if None in [startTangent,endTangent,middleCentre]:
-			distance = numpy.infty
-			height = None
-			path = None
+			distances = None
 		elif all([round(startCentre[i],2) == round(endCentre[i],2) for i in [0,1]]):
-			distance,path = drawArc(startCentre,startPoint,endPoint,pathType[0])
-			(distance,height),path = combinePaths([startHeight,endHeight],[distance],[path])
+			distances.append(arcPath(startCentre,startPoint,endPoint,pathType[0]))
 		else:
-			distance1,path1 = drawArc(startCentre,startPoint,startTangent,pathType[0])
-			distance2,path2 = drawArc(middleCentre,startTangent,endTangent,pathType[1])
-			distance3,path3 = drawArc(endCentre,endTangent,endPoint,pathType[2])
-			(distance,height),path = combinePaths([startHeight,endHeight],[distance1,distance2,distance3],[path1,path2,path3])
-
+			distances.append(arcPath(startCentre,startPoint,startTangent,pathType[0]))
+			distances.append(arcPath(middleCentre,startTangent,endTangent,pathType[1]))
+			distances.append(arcPath(endCentre,endTangent,endPoint,pathType[2]))
 	else:
 		raise ValueError("Path type {} is not in list ['RSR','LSL','RSL','LSR','RLR','LRL']".format(pathType))
 
-	if (distance < numpy.infty) and DEBUG:
-		#print(distance)
-		pyplot.axis('equal')
-		pyplot.show()
+	return distances
 
-	return (distance,height),path
+def dubinPath(startPoint,startDirection,endPoint,endDirection,radius,pathType,distances=None):
+	"""computes the results of any of the 6 options of dubin paths:
+	['RSR','LSL','RSL','LSR','RLR','LRL']
+	"""
+
+	if not distances:
+		distances = dubinDistance(startPoint,startDirection,endPoint,endDirection,radius,pathType)
+
+	startPoint = list(startPoint) + [0]*(3-len(startPoint))
+	startDirection = list(startDirection) + [0]*(3-len(startDirection))
+	endPoint = list(endPoint) + [0]*(3-len(endPoint))
+	endDirection = list(endDirection) + [0]*(3-len(endDirection))
+
+	height = endPoint[2]-startPoint[2]
+
+	results = []
+	if (pathType in ['RSR','LSL','RSL','LSR']):
+
+		startCentre = computeCentre(startPoint[:2],startDirection[:2],radius,pathType[0])
+		endCentre = computeCentre(endPoint[:2],endDirection[:2],radius,pathType[2])
+		startTangent,endTangent = tangentLines(startCentre[:2],endCentre[:2],radius,pathType)
+
+		if (None in [startTangent,endTangent]):
+			results = None
+		else:
+			startTangent = [i for i in startTangent]+[startPoint[2]+height*distances[0]/sum(distances)]
+			endTangent = [i for i in endTangent]+[endPoint[2]-height*distances[-1]/sum(distances)]
+			results.append(arcPath(startCentre,startPoint,startTangent,pathType[0],False))
+			results.append(linePath(startTangent,endTangent,False))
+			results.append(arcPath(endCentre,endTangent,endPoint,pathType[2],False))
+
+	elif (pathType in ['RLR','LRL']):
+
+		startCentre = computeCentre(startPoint[:2],startDirection[:2],radius,pathType[0])
+		endCentre = computeCentre(endPoint[:2],endDirection[:2],radius,pathType[2])
+		startTangent,endTangent,middleCentre = tangentCircles(startCentre[:2],endCentre[:2],radius,pathType)
+
+		if None in [startTangent,endTangent,middleCentre]:
+			results = None
+		elif all([round(startCentre[i],2) == round(endCentre[i],2) for i in [0,1]]):
+			results.append(arcPath(startCentre,startPoint,endPoint,pathType[0],False))
+		else:
+			startTangent = [i for i in startTangent]+[startPoint[2]+height*distances[0]/sum(distances)]
+			endTangent = [i for i in endTangent]+[endPoint[2]-height*distances[-1]/sum(distances)]
+			results.append(arcPath(startCentre,startPoint,startTangent,pathType[0],False))
+			results.append(arcPath(middleCentre,startTangent,endTangent,pathType[1],False))
+			results.append(arcPath(endCentre,endTangent,endPoint,pathType[2],False))
+	else:
+		raise ValueError("Path type {} is not in list ['RSR','LSL','RSL','LSR','RLR','LRL']".format(pathType))
+
+	return results
 
 def bestPath(startPoint,startDirection,endPoint,endDirection,radius):
 	"computes the length of the best dubin path and returns route of the shortest"
 
-	bestDistance = numpy.infty
+	bestResults = None
+	bestDistances = [numpy.infty]
 
 	#cycle through options calculating distance
 	for pathType in ['RSR','LSL','RSL','LSR','RLR','LRL']:
 
-		if DEBUG: print(pathType)
+		distances = dubinDistance(startPoint,startDirection,endPoint,endDirection,radius,pathType)
 
-		#print(startPoint,startDirection,endPoint,endDirection)
-		(distance,height),path = dubinPath(startPoint,startDirection,endPoint,endDirection,radius,pathType)
-		
-		if (distance < bestDistance):
-			bestPath = path
-			bestDistance = distance
-			bestHeight = height
+		if (distances and (sum(distances) < sum(bestDistances))):
+			bestPath = pathType
+			bestDistances = distances
 
-	bestDistance = numpy.linalg.norm([bestDistance,bestHeight])
-
-	return (bestDistance,bestHeight),bestPath
+	return dubinPath(startPoint,startDirection,endPoint,endDirection,radius,bestPath,bestDistances)
 
 class DubinPath():
-	"""DubinPath is a class to enable calculation and plotting of the minimum length route through multiple nodes"""
+	"""DubinPath is a class to enable calculation and plotting of the minimum length route through
+	a number of nodes
+	For each additional node DubinPath adds the energy distance and path to the class variables
+	"""
 
-	def __init__(self, radius):
+	def __init__(self, radius, planeModel=None):
+
+		self.planeModel = planeModel
 		self.radius = radius
 		self.distance = 0
-		self.climb = 0
-		self.decend = 0
+		self.energy = 0
 		self.nodes = []
 		self.lastNodes = [None,None]
 
@@ -411,6 +335,7 @@ class DubinPath():
 
 		self.nodes.append(numpy.array(node))
 		nodeCount = len(self.nodes)
+		radius = self.radius
 
 		if (nodeCount>2):
 			previousNode = self.nodes[-3]
@@ -419,18 +344,23 @@ class DubinPath():
 			startDirection = startNode - previousNode
 			endDirection = endNode - startNode
 
-			(distance,height),path = bestPath(startNode,startDirection,endNode,endDirection,self.radius)
+			results = bestPath(startNode,startDirection,endNode,endDirection,self.radius)
 
-			self.x += path[0]
-			self.y += path[1]
-			self.z += path[2]
-			
-			self.distance += distance
+			for result in results:
+				mode,distance,height,path = result
 
-			if (height > 0):
-				self.climb += height
-			elif (height < 0):
-				self.decend += height
+				self.distance += distance
+				self.x += [i for i in path[0]]
+				self.y += [i for i in path[1]]
+				self.z += [i for i in path[2]]
+
+				if self.planeModel:
+					if (mode == "straight"):
+						self.energy += self.planeModel.climbingFlight(distance,height)
+					elif (mode == "turn"):
+						self.energy += self.planeModel.climbingTurningFlight(distance,height,radius)
+					else:
+						raise ValueError("The mode of flight needs to be straight or turning")
 
 		elif (nodeCount>1):
 			self.lastNodes[1] = node
@@ -442,73 +372,23 @@ class DubinPath():
 
 		for i in range(len(self.lastNodes)):
 			if self.lastNodes[i] != None:
-				# print(self.lastNodes[i])
 				self.addNode(self.lastNodes[i])
-				# print(self.lastNodes[i])
 				self.lastNodes[i] = None
-
-		# if not (all([self.nodes[-1][i] == self.nodes[0][i] for i in range(3)])):
-		# 	self.addNode(self.nodes[0])
-
-		# if not (all([self.nodes[-1][i] == self.nodes[1][i] for i in range(3)])):
-		# 	self.addNode(self.nodes[1])
 
 	def getDistance(self):
 		"method to return the distance of the path"
 
 		self.makeLoop()
-		#print(self.climb,self.decend)
 		return self.distance
 
 	def getPath(self):
 		"method to return the points of the path "
 
 		self.makeLoop()
-		#print(self.climb,self.decend)
 		return [self.x,self.y,self.z]
 
-if __name__ == "__main__":
+	def getEnergy(self):
+		"returns the energy required to navigate the given path"
 
-	path = DubinPath(1)
-	path.addNode([0,0,0])
-	path.addNode([-2,-2,0])
-	path.addNode([2,2,2])
-	path.plotPath()
-
-	# bestPath([0,0],[0,1],[0,2],[0,1],1)
-	# bestPath([0,0],[0,1],[2,2],[1,0],1)
-	# bestPath([0,0],[0,1],[1,2],[1,0],2)
-	# bestPath([0,0],[0,-1],[2,2],[1,0],1)
-	# bestPath([6,0],[0,-1],[6,2],[1,1],1)
-
-	# dubinPath([0,0],[0,1],[2,2],[1,0],1,'RLR')
-	# dubinPath([0,0],[0,1],[1,1],[1,0],1,'RLR')
-	# dubinPath([0,0],[0,1],[1,1],[1,0],1,'LRL')
-	# dubinPath([0,0],[1,0],[2,2],[1,0],1,'RLR')
-	# dubinPath([0,0],[0,1],[2,2],[1,0],1,'LRL')
-	# dubinPath([0,0],[0,1],[4,4],[1,0],1,'RSR')
-	# dubinPath([0,0],[0,1],[4,4],[1,0],1,'LSL')
-	# dubinPath([0,0],[0,1],[4,4],[1,0],1,'LSR')
-	# dubinPath([0,0],[0,1],[4,4],[1,0],1,'RSL')
-	# dubinPath([0,0],[0,-1],[4,4],[1,0],1,'RSR')
-	# dubinPath([0,0],[0,-1],[4,4],[1,0],1,'LSL')
-	# dubinPath([0,0],[0,-1],[4,4],[1,0],1,'LSR')
-	# dubinPath([0,0],[0,-1],[4,4],[1,0],1,'RSL')
-
-	# computeCentre([0,0],[1,0],1)
-	# computeCentre([1,1],[1,1],1)
-	# computeCentre([0,0],[0,1],1)
-	# computeCentre([0,0],[-1,-1],1)
-
-	#tangentNodes = tangentLines([-1,0],1,[2,0],1)
-	#tangentLines([-5,5],1,[2,0],3)
-	#tangentLines([-5,5],6,[12,0],3)
-
-
-	# drawArc([0,0],[-1,0],[0,1])
-	# drawLine([0,1],[0,0])
-	# drawArc([0,1],[0,0],[0,2])
-	# drawLine([0,2],[5,4])
-	# drawArc([0,0],[5,4],[4,5])
-	# pyplot.axis('equal')
-	# pyplot.show()
+		self.makeLoop()
+		return self.energy

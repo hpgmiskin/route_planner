@@ -1,109 +1,92 @@
-#latinHypercube
-import numpy,os,sys,csv,subprocess
+from shared import *
+import numpy,os,sys,csv,subprocess,time
 
-MATLAB_FILEPATH = "update_data.m"
-MATLAB_OUTPUT_FILEPATH = "matlab_output"
+def unitCube(numberOfNode):
+	"function to return the nodes contained within a unit latin hypercube with given numbers of nodes"
 
-def unitCube(numberPoints):
-    "function to return the nodes contained within a latin hypercube of given size"
+	return samplePlan(3,numberOfNode)
 
-    return samplePlan(3,numberPoints)
+def allUnitCubes():
+	"function to calculate all unit cube latin hypercubes"
 
-    filePath = "matlab/{}_{}.csv".format(MATLAB_OUTPUT_FILEPATH,numberPoints)
+	for i in ALL_RESULTS:
+		unitCube(i)
 
-    def updateMatlab(numberPoints):
-        """function to run the required matlab script that updates all required data
+def samplePlan(numberDimension,numberOfNode):
+	"function to load or compute latin hypercubes of given number of nodes and dimensions"
 
-        assumes that the function to update matlab is stored in a folder called matlab of current directory
-        """
+	numberDimension = int(numberDimension)
+	numberOfNode = int(numberOfNode)
+	matlabUpdate = "update_data.m"
 
-        fileContents = ""
-        fileContents+="output = bestlh({},3,1,1);\n".format(numberPoints)
-        fileContents+="csvwrite('{}_{}.csv',output);".format(MATLAB_OUTPUT_FILEPATH,numberPoints)
+	#if less than two nodes return None
+	if (numberOfNode < 2):
+		return None
 
-        with open("matlab/"+MATLAB_FILEPATH,"w") as openFile:
-            openFile.write(fileContents)
+	def updateMatlab(numberDimension,numberOfNode):
+		"""function to run the required matlab script that updates all required data
 
-        filePath = "matlab/"+MATLAB_FILEPATH
-        currentDirectory = os.getcwd()
-        matlabCommand = 'cd {}, run {}, exit'.format(currentDirectory,filePath)
+		assumes that the function to update matlab is stored in a folder called matlab of current directory
+		"""
 
-        subprocess.check_call(['matlab', '-wait', '-automation', '-nosplash', '-noFigureWindows', '-r', matlabCommand])
+		#define matlab update file
+		fileContents = ""
+		fileContents+="output = bestlh({},{},1,1);\n".format(numberOfNode,numberDimension)
+		fileContents+="csvwrite('latin_hypercube_{}_{}.csv',output);".format(numberDimension,numberOfNode)
 
-    def loadMatlab(filePath):
-        "function to load the data created by MATLAB"
+		#write update file for matlab to call
+		updatePath = "matlab/update_data.m"
+		with open(updatePath,"w") as openFile:
+			openFile.write(fileContents)
 
-        nodes = []
-        with open(filePath,"r") as csvFile:
-            csvReader = csv.reader(csvFile,dialect="excel")
-            for row in csvReader:
-                node = [float(item) for item in row[:3] if len(item)>0]
-                if (len(node) == 3):
-                    nodes.append(node)
+		#define command to call matlab in current working directory and run update file
+		currentDirectory = os.getcwd()
+		matlabCommand = 'cd {}, run {}, exit'.format(currentDirectory,updatePath)
 
-        return [numpy.array(node) for node in nodes]
+		#run command with no windows or spash screen
+		subprocess.check_call(['matlab', '-wait', '-automation', '-nosplash', '-noFigureWindows', '-r', matlabCommand])
 
-    try:
-        open(filePath)
-    except FileNotFoundError:
-        updateMatlab(numberPoints)
+	def loadMatlab(filePath):
+		"function to load the data created by MATLAB"
 
-    return loadMatlab(filePath)
+		#for all rows in the output file
+		nodes = []
+		with open(filePath,"r") as csvFile:
+			csvReader = csv.reader(csvFile,dialect="excel")
+			for row in csvReader:
+				nodes.append([float(item) for item in row if len(item)>0])
 
-def samplePlan(numberDimensions,numberPoints):
-    "function to return the nodes contained within a latin hypercube of given size"
+		#return numpy array of node coordinates
+		return [numpy.array(node) for node in nodes]
 
-    filePath = "matlab/latin_hypercube_{}_{}.csv".format(numberDimensions,numberPoints)
+	filePath = "matlab/latin_hypercube_{}_{}.csv".format(numberDimension,numberOfNode)
+	try:
+		#attempt to open the required hypercube
+		open(filePath)
+	except FileNotFoundError:
+		#if file not found update matlab and wait for a second
+		updateMatlab(numberDimension,numberOfNode)
+		time.sleep(1)
 
-    def updateMatlab():
-        """function to run the required matlab script that updates all required data
+	return loadMatlab(filePath)
 
-        assumes that the function to update matlab is stored in a folder called matlab of current directory
-        """
-
-        fileContents = ""
-        fileContents+="output = bestlh({},{},1,1);\n".format(numberPoints,numberDimensions)
-        fileContents+="csvwrite('latin_hypercube_{}_{}.csv',output);".format(numberDimensions,numberPoints)
-
-        with open("matlab/"+MATLAB_FILEPATH,"w") as openFile:
-            openFile.write(fileContents)
-
-        filePath = "matlab/"+MATLAB_FILEPATH
-        currentDirectory = os.getcwd()
-        matlabCommand = 'cd {}, run {}, exit'.format(currentDirectory,filePath)
-
-        subprocess.check_call(['matlab', '-wait', '-automation', '-nosplash', '-noFigureWindows', '-r', matlabCommand])
-
-    def loadMatlab():
-        "function to load the data created by MATLAB"
-
-        nodes = []
-        with open(filePath,"r") as csvFile:
-            csvReader = csv.reader(csvFile,dialect="excel")
-            for row in csvReader:
-                node = [float(item) for item in row[:3] if len(item)>0]
-                if (len(node) == 3):
-                    nodes.append(node)
-
-        return [numpy.array(node) for node in nodes]
-
-    try:
-        open(filePath)
-    except FileNotFoundError:
-        updateMatlab(numberPoints)
-
-    return loadMatlab(filePath)
-
-def sampleSpace(xLength,yLength,zLength,numberPoints):
+def sampleSpace(lengths,numberOfNode):
 	"function to return a latin hypercube scaled to the required sample size and with the given number of points"
 
-	nodes = unitCube(numberPoints)
+	#define number of dimensions from length of lengths
+	dimensions = len(lengths)
+	#obtain the required number of nodes of given dimensions
+	nodes = samplePlan(dimensions,numberOfNode)
+	#create numpy array of lengths for easy dot product multiplication
+	lengths = numpy.array(lengths)
+	#preallocate memory for scaled nodes
+	scaledNodes = numpy.zeros([numberOfNode,dimensions])
 
-	scaledNodes = numpy.zeros([numberPoints,3])
+	#for all nodes populate scaled nodes
 	for i,node in enumerate(nodes):
-		[x,y,z] = node
-		scaledNodes[i] = [x*xLength,y*yLength,z*zLength]
+		scaledNodes[i] = node*lengths
 
 	return scaledNodes
 
-
+if (__name__ == "__main__"):
+	allUnitCubes()

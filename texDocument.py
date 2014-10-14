@@ -1,6 +1,9 @@
 #LaTeX Writing
-import re
+import os,re,subprocess
 from string import Template
+
+#use to change between listings and minted code packages
+MINTED = False
 
 class TexDocument():
 	"Class to write LaTeX documents"
@@ -9,14 +12,18 @@ class TexDocument():
 
 		self.filename = filename
 		self.document = ""
+		self.wordCount = 0
+		self.abreviations = {}
+		self.nomeclature = {}
+		self.labels = []
 		self.header()
 
-
-	def updateTex(self,content):
+	def updateTex(self,content=None):
 		"method to update the Tex Document with the given content"
 
-		content = re.subn(r"([^\\])%",r"\1\%",content)[0]
-		self.document += content
+		if content:
+			content = re.subn(r"([^\\])%",r"\1\%",content)[0]
+			self.document += content
 
 		fileContent = Template(r"""
 $document
@@ -32,24 +39,37 @@ $document
 	def header(self):
 		"method to add the required header to a latex file"
 
-		content = r"""\documentclass[a4paper,12pt,twoside]{article}
+		#\renewcommand{\rmdefault}{phv}
+		#\renewcommand{\sfdefault}{phv}
+
+		if MINTED:
+			self.package = "minted"
+		else:
+			self.package = "listings"
+
+		content = Template(r"""\documentclass[a4paper,12pt,twoside]{article}
 \usepackage[a4paper,top=20mm,bottom=20mm,inner=38mm,outer=19mm]{geometry}
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{url}
-\usepackage{listings}
 \usepackage{subfigure}
 \usepackage[noadjust]{cite}
 \usepackage{amssymb}
 \usepackage{parskip}
 \usepackage{setspace}
+\usepackage{$package}
+\usepackage{etoolbox}
+\patchcmd{\thebibliography}{\section*}{\section}{}{}
 \bibliographystyle{apalike} 
+
 \begin{document}
 \onehalfspacing
-"""
+""")
+
+		content = content.substitute(package=self.package)
 		self.updateTex(content)
 
-	def titlePage(self,title,subtitle,abstract,name="Henry Miskin",table=""):
+	def title(self,title,subtitle,abstract,other="",name="Henry Miskin"):
 		"method to add a title page"
 
 		titlePage = Template(r"""
@@ -64,27 +84,64 @@ $document
 \centerline{\textit{\today}}
 \end{minipage}
 \end{center}
-\vspace{5cm}
-\center
-\textbf{Abstract}
-\center
+\vspace{2em}
+\centering
+\vfill
+\textbf{\large Abstract}
+\\
 $abstract
 \vfill
-$table
+$other
 \clearpage
-\end{titlepage}
-\tableofcontents
-\clearpage
-""")
+\end{titlepage}""")
 
-		titlePage = titlePage.substitute(title=title,subtitle=subtitle,name=name,abstract=abstract,table=table)
+		titlePage = titlePage.substitute(title=title,subtitle=subtitle,name=name,abstract=abstract,other=other)
 		self.updateTex(titlePage)
+
+	def contents(self,figures=False,tables=False):
+		"method to add the contents page"
+
+		content = Template(r"""
+\tableofcontents
+\vfill
+\begin{center}
+Word Count: WORD-COUNT-HERE
+\end{center}
+\vfill
+\clearpage
+$figures
+$tables
+\section*{Abreviations}
+ABREVIATIONS-HERE
+\section*{Nomeclature}
+NOMECLATURE-HERE
+\clearpage""")
+
+		if figures:
+			figures = r"\listoffigures \clearpage"
+		else:
+			figures = ""
+
+		if tables:
+			tables = r"\listoftables \clearpage"
+		else:
+			tables = ""
+
+		content = content.substitute(tables=tables,figures=figures)
+		self.updateTex(content)
 
 	def section(self,name,sectionType=""):
 		"method to add a section heading to the Tex Document"
 
-		sectionType = "{}section".format(sectionType)
-		label = name.replace(" ","_").lower()
+		self.wordCount += len(name.split())
+		label = self.formatLabel(name)
+
+		if (sectionType == "*"):
+			sectionType = "section*"
+		elif ("sub" in sectionType):
+			sectionType = "{}section".format(sectionType)
+		else:
+			sectionType = "section"
 
 		section = Template(r"""
 \$sectionType{$name}
@@ -97,10 +154,35 @@ $table
 		sectionRef = Template(r"\ref{sec:$label}")
 		sectionRef = sectionRef.substitute(label=label)
 
+
 		return sectionRef
+
+	def code(self,filename,name=None,description=""):
+		"adds code to the LaTeX document"
+
+		if self.package == "minted":
+			command = "inputminted[tabsize=2,fontsize=\scriptsize]{python}"
+		else:
+			command = "lstinputlisting[tabsize=2]"
+
+		code = Template(r"""
+\subsection*{$name}
+$description
+\vspace{1em}
+\$command{../$filename}
+\vspace{2em}
+""")
+
+		if not name:
+			name = filename.split(".")[0]
+
+		code = code.substitute(filename=filename,name=name,command=command,description=description)
+		self.updateTex(code)
 
 	def paragraph(self,text):
 		"method to add a paragraph of text provided"
+
+		self.wordCount += len(text.split())
 
 		paragraph = Template("""
 $text
@@ -109,21 +191,24 @@ $text
 		paragraph = paragraph.substitute(text=text)
 		self.updateTex(paragraph)
 
-	def figure(self,filename,caption=""):
+	def figure(self,filename,caption="",width=0.6,position=""):
 		"method to add a figure to the Tex Document"
 
 		label = filename.split("/")[1].split(".")[0]
+		label = self.formatLabel(label)
+
+		self.wordCount += len(caption.split())
 
 		figure = Template(r"""
-\begin{figure}[H]
+\begin{figure}$position
 \centering
-\includegraphics[width=0.8\textwidth]{$filename} 
+\includegraphics[width=$width\textwidth]{$filename} 
 \caption{$caption}
 \label{fig:$label}
 \end{figure}
 """)
 
-		figure = figure.substitute(filename=filename,caption=caption,label=label)
+		figure = figure.substitute(position=position,width=width,filename=filename,caption=caption,label=label)
 		self.updateTex(figure)
 
 		figureRef = Template(r"\ref{fig:$label}")
@@ -134,8 +219,10 @@ $text
 	def figures(self,filenames,caption="",captions=None):
 		"method to add a 4x4 figure to the LaTeX document"
 
+		self.wordCount += len(caption.split())
+
 		figuresContent = Template(r"""
-\begin{figure}[H]
+\begin{figure}
 	\centering
 	$subFigures
 	\caption{$caption}
@@ -163,11 +250,12 @@ $text
 			captions = [""]*len(filenames)
 
 		for i,filename in enumerate(filenames):
-			label = captions[i].replace(" ","_").lower()
+			self.wordCount += len(captions[i].split())
+			label = self.formatLabel(captions[i])
 			subFigures += subFigure.substitute(caption=captions[i],filename=filename,label=label,width=width)
 			figureRefs.append(Template(r"\ref{fig:$label}").substitute(label=label))
 
-		label = caption.replace(" ","_").lower()
+		label = self.formatLabel(caption)
 		figuresContent = figuresContent.substitute(subFigures=subFigures,label=label,caption=caption)
 		self.updateTex(figuresContent)
 
@@ -175,35 +263,22 @@ $text
 		return figureRef,figureRefs
 
 
-	def table(self,name,table,centering="c"):
+	def table(self,name,table,centering="l"):
 		"method to add a table to the LaTeX document"
 
-		label = name.replace(" ","_").lower()
-		centering = centering*len(table[0])
+		label = self.formatLabel(name)
 
 		tableBody = Template(r"""
 \begin{table}[width=\textwidth]
 \centering
-    \begin{tabular}{$centering}
-    $lines
-    \end{tabular}
+$tabular
 \caption{$caption}
 \label{tbl:$label}
 \end{table}
 """)
 
-		lines = ""
-
-		for row in table:
-			rowLength = len(row)
-			for count,item in enumerate(row):
-				if (count != rowLength-1):
-					lines += Template(r"$item	& ").substitute(item=item)
-				else:
-					lines += Template(r"""$item	\\
-""").substitute(item=item)
-
-		tableBody = tableBody.substitute(caption=name,label=label,centering=centering,lines=lines)
+		tabular = self.tabular(table,centering)
+		tableBody = tableBody.substitute(tabular=tabular,caption=name,label=label)
 		self.updateTex(tableBody)
 
 		tableRef = Template(r"\ref{tbl:$label}")
@@ -211,11 +286,35 @@ $text
 
 		return tableRef
 
+	def tabular(self,table,centering="l"):
+		"method to add a tabular section to the report"
+
+		centering = centering*len(table[0])
+
+		tabularBody = Template(r"""
+    \begin{tabular}{$centering}
+    $lines
+    \end{tabular}""")
+
+		lines = ""
+
+		for row in table:
+			rowLength = len(row)
+			for count,item in enumerate(row):
+				if type(item)==str: self.wordCount += len(item.split())
+				if (count != rowLength-1):
+					lines += Template(r"$item	& ").substitute(item=item)
+				else:
+					lines += Template(r"""$item	\\
+""").substitute(item=item)
+
+		tabularBody = tabularBody.substitute(centering=centering,lines=lines)
+		return tabularBody
 
 	def equation(self,name,equation):
 		"method to add an equation to the LaTeX document"
 
-		label = name.replace(" ","_").lower()
+		label = self.formatLabel(name)
 
 		equationContent = Template(r"""
 \begin{equation}
@@ -234,6 +333,8 @@ $equation
 
 	def list(self,items,listType="itemize"):
 		"method to add a list to the Latex document"
+
+		self.wordCount += sum([len(item.split()) for item in items])
 
 		listContent = Template(r"""
 \begin{$listType}
@@ -260,3 +361,102 @@ $listItems
 \newpage"""
 
 		self.updateTex(content)
+
+	def addAbreviations(self):
+		"method to add abreviations to the document"
+
+		items = sorted(self.abreviations.items(), key=lambda x:x[0])
+		table = [[r"{}".format(name),"{}".format(value)] for name,value in items]
+		table.insert(0,["Abreviation","Name"])
+		abreviations = self.tabular(table)
+
+		self.document = self.document.replace("ABREVIATIONS-HERE",abreviations)
+		self.updateTex()
+
+	def addNomeclature(self):
+		"method to add nomeclature to the document"
+
+		items = sorted(self.nomeclature.items(), key=lambda x:x[0])
+		table = [[r"${}$".format(name),"{}".format(value[0]),r"${}$".format(value[1])] for name,value in items]
+		table.insert(0,["Symbol","Name","Unit"])
+		nomeclature = self.tabular(table)
+
+		self.document = self.document.replace("NOMECLATURE-HERE",nomeclature)
+		self.updateTex()
+
+	def addWordCount(self,wordCount=None):
+		"method to count the number of words in the document and add it to title page"
+
+		if not wordCount:
+			wordCount = self.wordCount
+
+		self.document = self.document.replace("WORD-COUNT-HERE",str(wordCount))
+		self.updateTex()
+
+	def formatLabel(self,label):
+		"function to format label and if there is the same label from before add _1"
+
+		label = label.replace(" ","_").lower()
+		label = re.subn(r"[^\w\d_]","",label)[0]
+		label = label.replace("__","_")
+		newLabel = label
+
+		i=0
+		while True:
+			if newLabel in self.labels:
+				newLabel = "{}_{}".format(label,i)
+				i += 1
+			else:
+				break
+
+		self.labels.append(newLabel)
+
+		return newLabel
+
+	def compile(self,show=False):
+		"method to compile the report and open the pdf if show == true"
+
+		# self.addAbreviations()
+		# self.addNomeclature()
+		#self.addWordCount()
+
+		print("----------------------------------------------")
+
+		cwd = os.getcwd()
+		reportPath = os.path.join(cwd,self.filename)
+		reportName = os.path.basename(reportPath).split(".")[0]
+		reportDirectory = os.path.dirname(reportPath)
+		#print(reportName,reportDirectory)
+		os.chdir(reportDirectory)
+
+		try:
+			os.unlink("{}.pdf".format(reportName))
+		except PermissionError:
+			os.system("TASKKILL /F /IM AcroRd32.exe")
+		except FileNotFoundError:
+			None
+
+		print("Writing LaTeX Document")
+
+		FNULL = open(os.devnull, 'w')
+		subprocess.call("pdflatex -shell-escape {}.tex".format(reportName),
+			stdout=FNULL)
+
+		subprocess.call("bibtex {}".format(reportName),
+			stdout=FNULL)
+
+		subprocess.call("pdflatex -shell-escape {}.tex".format(reportName),
+			stdout=FNULL)
+
+		subprocess.call("pdflatex -shell-escape {}.tex".format(reportName),
+			stdout=FNULL)
+
+		for extension in ["log","aux","toc","bbl","blg","pyg"]:
+			try:
+				os.unlink("{}.{}".format(reportName,extension))
+			except:
+				None
+
+		if show:
+			os.system("start {}.pdf".format(reportName))
+		os.chdir(cwd)

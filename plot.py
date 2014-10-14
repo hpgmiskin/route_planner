@@ -1,21 +1,23 @@
-import numpy,matplotlib,itertools
+import re,numpy,matplotlib,itertools
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import pyplot
 from shared import naturalKeys
 
-FONTSIZE = 10
+FONTSIZE = 16
 
-def saveFigure(title,show):
+def saveFigure(title,show=False,tight=True):
 	"function to save or show the current figure given the title"
 
-	pyplot.autoscale(enable=True, axis='both', tight=True)
+	pyplot.autoscale(enable=True, axis='both', tight=tight)
 
 	if show:
 		pyplot.show()
 		pyplot.close()
 		return None
 	else:
-		filename = "figures/{}.png".format(title.replace(" ","_").lower())
+		title =  re.subn(r"[\s$]","_",title)[0]
+		title =  re.subn(r"[^\w\d_]","",title)[0]
+		filename = "figures/{}.png".format(title.lower())
 		pyplot.savefig("report/"+filename)
 		pyplot.close("all")
 		return filename
@@ -28,7 +30,7 @@ def histogram(data,title="",xLabel="Value",yLabel="Frequency",lines=None,numberB
 	pyplot.figure(num=title)
 	pyplot.hold(True)
 	pyplot.hist(data,numberBars)
-	pyplot.title(title,fontsize=FONTSIZE)
+	#pyplot.title(title,fontsize=FONTSIZE)
 	pyplot.xlabel(xLabel,fontsize=FONTSIZE)
 	pyplot.ylabel(yLabel,fontsize=FONTSIZE)
 
@@ -41,8 +43,23 @@ def histogram(data,title="",xLabel="Value",yLabel="Frequency",lines=None,numberB
 
 	return saveFigure(title,show)
 
-def bar(labels,values,title="",xLabel="",yLabel="",show=False):
+def bar(labels,values,title="",xLabel="",yLabel="",lines=False,show=False):
 	"plots a bar chart with the givne labels and data values"
+
+	def plot9():
+	    data = [ ("data1", 34), ("data2", 22),
+	            ("data3", 11), ( "data4", 28),
+	            ("data5", 57), ( "data6", 39),
+	            ("data7", 23), ( "data8", 98)]
+	    N = len( data )
+	    x = np.arange(1, N+1)
+	    y = [ num for (s, num) in data ]
+	    labels = [ s for (s, num) in data ]
+	    width = 1
+	    bar1 = plt.bar( x, y, width, color="y" )
+	    plt.ylabel( 'Intensity' )
+	    plt.xticks(x + width/2.0, labels )
+	    plt.show()
 
 	length = len(values)
 
@@ -52,10 +69,11 @@ def bar(labels,values,title="",xLabel="",yLabel="",show=False):
 	figure = pyplot.figure(num=title)
 	axes = pyplot.axes()
 
+	pyplot.hold(True)
 	barAxes = pyplot.bar(indexs,values,barWidth)
 
 	pyplot.legend(barAxes,labels,fontsize=FONTSIZE)
-	pyplot.title(title,fontsize=FONTSIZE)
+	#pyplot.title(title,fontsize=FONTSIZE)
 
 	labels = [label[:10] for label in labels]
 	pyplot.xticks(indexs + barWidth/2, labels, rotation=0)
@@ -63,6 +81,13 @@ def bar(labels,values,title="",xLabel="",yLabel="",show=False):
 	
 	pyplot.xlabel(xLabel,fontsize=FONTSIZE)
 	pyplot.ylabel(yLabel,fontsize=FONTSIZE)
+
+	if lines:
+		for name,line in sorted(lines.items(),key=lambda x:naturalKeys(x[0]),reverse=True):
+			pyplot.plot([line,line],[0,maxFrequency],label=name,linewidth=1)
+		pyplot.legend()
+
+	pyplot.hold(False)
 
 	return saveFigure(title,show)
 
@@ -74,19 +99,19 @@ def pie(labels,values,title="",xLabel="",yLabel="",show=False):
 
 	pyplot.pie(values, labels=[label[:10] for label in labels])
 	pyplot.legend(labels,fontsize=FONTSIZE)
-	pyplot.title(title,fontsize=FONTSIZE)
+	#pyplot.title(title,fontsize=FONTSIZE)
 
 	pyplot.xlabel(xLabel,fontsize=FONTSIZE)
 	pyplot.ylabel(yLabel,fontsize=FONTSIZE)
 
 	return saveFigure(title,show)
 
-def line(xAxis,yAxis,title="",xLabel="x",yLabel="y",xTicks=None,yTicks=None,show=False):
+def line(xAxis,yAxis,title="",xLabel="x",yLabel="y",location=4,scatter=None,xTicks=None,yTicks=None,tight=True,show=False):
 	"method to plot the class data and if DEBUG = False save the figure"
 
 	pyplot.figure(num=title)
 	pyplot.hold(True)
-	pyplot.title(title)
+	#pyplot.title(title)
 
 	if (type(xAxis[0]) == str):
 		xTicks = xAxis
@@ -98,24 +123,26 @@ def line(xAxis,yAxis,title="",xLabel="x",yLabel="y",xTicks=None,yTicks=None,show
 			yMin = min(data+[yMin])
 			yMax = max(data+[yMax])
 			pyplot.plot(xAxis[:len(data)],data[:len(xAxis)],label=name)
-	elif (type(yAxis) == list):
+		pyplot.legend(fontsize=FONTSIZE,loc=location)
+	else:
 		yMin = min(yAxis)
 		yMax = max(yAxis)
 		pyplot.plot(xAxis[:len(yAxis)],yAxis[:len(xAxis)],label="")
-	else:
-		raise ValueError("Plot expected list or dictionary for yAxis")
 
 	if xTicks:
 		pyplot.xticks(xAxis, xTicks, rotation=0)
+
+	if scatter:
+		for name,data in scatter.items():
+			pyplot.scatter(data[0],data[1],label=name)
 
 	pyplot.xlabel(xLabel,fontsize=FONTSIZE)
 	pyplot.ylabel(yLabel,fontsize=FONTSIZE)
 	ySpace = (yMax-yMin)*0.05
 	pyplot.ylim((yMin-ySpace,yMax+ySpace))
-	pyplot.legend(fontsize=FONTSIZE)
 	pyplot.hold(False)
 
-	return saveFigure(title,show)
+	return saveFigure(title,show,tight)
 
 def line3(xAxis,yAxis,zAxis,title="",xLabel="x",yLabel="y",zLabel="z",show=False):
 	"method to plot the class data and if DEBUG = False save the figure"
@@ -132,21 +159,24 @@ def line3(xAxis,yAxis,zAxis,title="",xLabel="x",yLabel="y",zLabel="z",show=False
 	axes.set_xlabel(xLabel,fontsize=FONTSIZE)
 	axes.set_ylabel(yLabel,fontsize=FONTSIZE)
 	axes.set_zlabel(zLabel,fontsize=FONTSIZE)
-	axes.set_title(title,fontsize=FONTSIZE)
+	#axes.set_title(title,fontsize=FONTSIZE)
 	axes.legend()
 
 	return saveFigure(title,show)
 
-def path(paths,title="",xLabel="x",yLabel="y",arrows=None,show=False):
+def path(paths,title="",xLabel="x",yLabel="y",arrows=None,show=False,tight=True):
 	"function to plot the given paths"
 
 	figure = pyplot.figure(num=title)
 	axes = pyplot.axes()
 	pyplot.hold(True)
-	pyplot.title(title)
+	#pyplot.title(title)
 
-	for label,data in paths.items():
-		[x,y,z] = data
+	for label,data in sorted(paths.items(),key=lambda x:naturalKeys(x[0])):
+		if len(data) == 3:
+			[x,y,z] = data
+		else:
+			[x,y] = data
 		axes.plot(x[:len(y)],y[:len(x)],label=label)
 
 	if arrows:
@@ -156,10 +186,34 @@ def path(paths,title="",xLabel="x",yLabel="y",arrows=None,show=False):
 
 	axes.set_xlabel(xLabel,fontsize=FONTSIZE)
 	axes.set_ylabel(yLabel,fontsize=FONTSIZE)
-	axes.set_title(title,fontsize=FONTSIZE)
-	axes.legend()
+	#axes.set_title(title,fontsize=FONTSIZE)
+	axes.legend(loc=4)
 	pyplot.hold(False)
 	pyplot.axis('equal')
+
+	return saveFigure(title,show,tight)
+
+def path2(paths,title="",xLabel="x",yLabel="y",scatter=None,show=False):
+	"function to plot the given paths"
+
+	figure = pyplot.figure(num=title)
+	axes = pyplot.axes()
+	pyplot.hold(True)
+	#pyplot.title(title)
+
+	for label,data in sorted(paths.items(),key=lambda x:naturalKeys(x[0])):
+		[x,y] = data
+		axes.plot(x[:len(y)],y[:len(x)],label=label)
+
+	if scatter:
+		for name,data in sorted(scatter.items(),key=lambda x:naturalKeys(x[0])):
+			pyplot.scatter(data[0],data[1],label=name)
+
+	axes.set_xlabel(xLabel,fontsize=FONTSIZE)
+	axes.set_ylabel(yLabel,fontsize=FONTSIZE)
+	#axes.set_title(title,fontsize=FONTSIZE)
+	axes.legend(loc=4)
+	pyplot.hold(False)
 
 	return saveFigure(title,show)
 
@@ -183,7 +237,7 @@ def path3(paths,title="",xLabel="x",yLabel="y",zLabel="z",show=False):
 	axes.set_xlabel(xLabel,fontsize=FONTSIZE)
 	axes.set_ylabel(yLabel,fontsize=FONTSIZE)
 	axes.set_zlabel(zLabel,fontsize=FONTSIZE)
-	axes.set_title(title,fontsize=FONTSIZE)
+	#axes.set_title(title,fontsize=FONTSIZE)
 	axes.legend()
 
 	return saveFigure(title,show)
@@ -194,7 +248,7 @@ def scatter(xAxis,yAxis,title="",xLabel="x",yLabel="y",xTicks=None,yTicks=None,l
 	pyplot.figure(num=title)
 	axes = pyplot.axes()
 	pyplot.hold(True)
-	pyplot.title(title,fontsize=FONTSIZE)
+	#pyplot.title(title,fontsize=FONTSIZE)
 
 	maxValue = 0
 	minValue = numpy.infty
@@ -209,19 +263,17 @@ def scatter(xAxis,yAxis,title="",xLabel="x",yLabel="y",xTicks=None,yTicks=None,l
 			minValue = min(data+[minValue])
 			maxValue = max(data+[maxValue])
 			axes.scatter(xAxis[:len(data)],data[:len(xAxis)],label=name,color=next(colours))
-	elif (type(yAxis) == list):
-		axes.scatter(xAxis[:len(yAxis)],yAxis[:len(xAxis)],label="")
+		handles, labels = axes.get_legend_handles_labels()
+		l1 = axes.legend(handles,labels,loc=4,fontsize=FONTSIZE)
 	else:
-		raise ValueError("Plot expected list or dictionary for yAxis")
+		axes.scatter(xAxis[:len(yAxis)],yAxis[:len(xAxis)],label="")
 
 	if xTicks:
 		axes.xticks(xAxis, xTicks, rotation=0)
 
 	axes.set_xlabel(xLabel,fontsize=FONTSIZE)
 	axes.set_ylabel(yLabel,fontsize=FONTSIZE)
-	axes.set_title(title,fontsize=FONTSIZE)
-	handles, labels = axes.get_legend_handles_labels()
-	l1 = axes.legend(handles,labels,loc=4,fontsize=FONTSIZE)
+	#axes.set_title(title,fontsize=FONTSIZE)
 
 	if lines:
 		for name,line in sorted(lines.items(),key=lambda x:naturalKeys(x[0])):
@@ -239,27 +291,73 @@ def scatter(xAxis,yAxis,title="",xLabel="x",yLabel="y",xTicks=None,yTicks=None,l
 
 	return saveFigure(title,show)
 
-def scatter3(xAxis,yAxis,zAxis,title="",xLabel="x",yLabel="y",zLabel="z",show=False):
+def scatter2(series,title="",xLabel="x",yLabel="y",xTicks=None,yTicks=None,lines=None,location=4,show=False):
 	"method to plot the class data and if DEBUG = False save the figure"
 
-	matplotlib.rcParams['legend.fontsize'] = FONTSIZE
+	pyplot.figure(num=title)
+	axes = pyplot.axes()
+	pyplot.hold(True)
+	#pyplot.title(title,fontsize=FONTSIZE)
 
+	colours = itertools.cycle(["b","g","r","c","m","y","k"])
+	for name,data in sorted(series.items(),key=lambda x:naturalKeys(x[0])):
+		axes.scatter(data[0],data[1],label=name,color=next(colours))
+
+	for name,data in sorted(lines.items(),key=lambda x:naturalKeys(x[0])):
+		axes.plot(data[0],data[1],label=name,color=next(colours))
+
+	axes.set_xlabel(xLabel,fontsize=FONTSIZE)
+	axes.set_ylabel(yLabel,fontsize=FONTSIZE)
+	#axes.set_title(title,fontsize=FONTSIZE)
+	axes.legend(fontsize=FONTSIZE,loc=location)
+
+	pyplot.hold(False)
+
+	return saveFigure(title,show)
+
+def scatter3(xAxis,yAxis,zAxis,title="",xLabel="x",yLabel="y",zLabel="z",scaleBox=False,show=False):
+	"function to plot a 3d scatter plot"
+
+	matplotlib.rcParams['legend.fontsize'] = FONTSIZE
 	figure = pyplot.figure(num=title)
 	axes = Axes3D(figure)
 	#axes.set_aspect('equal')
 	
-	axes.scatter(xAxis, yAxis, zAxis, label=title)
-	#scaleBox(axes,xAxis, yAxis, zAxis)
+	if (type(zAxis) == dict):
+		colours = itertools.cycle(["b","g","r","c","m","y","k"])
+		for name,data in sorted(zAxis.items(),key=lambda x:naturalKeys(x[0])):
+			axes.scatter(xAxis, yAxis, data, label=name, color=next(colours))
+		axes.legend(fontsize=FONTSIZE)
+	else:
+		axes.scatter(xAxis, yAxis, zAxis, label=title)
+
+	if scaleBox:
+		addScaleBox(axes,xAxis, yAxis, zAxis)
 
 	axes.set_xlabel(xLabel,fontsize=FONTSIZE)
 	axes.set_ylabel(yLabel,fontsize=FONTSIZE)
 	axes.set_zlabel(zLabel,fontsize=FONTSIZE)
-	axes.set_title(title,fontsize=FONTSIZE)
-	axes.legend(fontsize=FONTSIZE)
+	#axes.set_title(title,fontsize=FONTSIZE)
 
 	return saveFigure(title,show)
 
-def scaleBox(axes,xAxis,yAxis,zAxis):
+def surface(xArray,yArray,zArray,title="",xLabel="x",yLabel="y",zLabel="z",show=False):
+	"function to plot a surface plot"
+
+	matplotlib.rcParams['legend.fontsize'] = FONTSIZE
+	figure = pyplot.figure(num=title)
+	axes = Axes3D(figure)
+
+	axes.plot_surface(xArray,yArray,zArray)
+
+	axes.set_xlabel(xLabel,fontsize=FONTSIZE)
+	axes.set_ylabel(yLabel,fontsize=FONTSIZE)
+	axes.set_zlabel(zLabel,fontsize=FONTSIZE)
+	#axes.set_title(title,fontsize=FONTSIZE)
+
+	return saveFigure(title,show)
+
+def addScaleBox(axes,xAxis,yAxis,zAxis):
 	"plots a invisible scale box to correct the aspect ratio"
 
 	pyplot.hold(True)
