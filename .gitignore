@@ -1,0 +1,22 @@
+#Data Files
+*.csv
+*.xlsm
+*.dat
+
+#Image Files
+*.png
+
+#Complied Python
+__pycache__/
+*.pyc
+
+#LaTeX Files
+*.bak
+*.lof
+*.lot
+*.toc
+*.tex
+*.log
+*.blg
+*.aux
+*.synctex.gz
