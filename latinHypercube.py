@@ -44,7 +44,7 @@ def samplePlan(numberDimension,numberOfNode):
 		matlabCommand = 'cd {}, run {}, exit'.format(currentDirectory,updatePath)
 
 		#run command with no windows or spash screen
-		subprocess.check_call(['matlab', '-wait', '-automation', '-nosplash', '-noFigureWindows', '-r', matlabCommand])
+		subprocess.check_call(['matlab', '-nosplash', '-noFigureWindows', '-r', matlabCommand])
 
 	def loadMatlab(filePath):
 		"function to load the data created by MATLAB"
@@ -63,7 +63,7 @@ def samplePlan(numberDimension,numberOfNode):
 	try:
 		#attempt to open the required hypercube
 		open(filePath)
-	except FileNotFoundError:
+	except IOError:
 		#if file not found update matlab and wait for a second
 		updateMatlab(numberDimension,numberOfNode)
 		time.sleep(1)

@@ -1,5 +1,5 @@
 from shared import *
-import numpy,re,urllib.request
+import numpy,re,urllib2
 
 class AirFoil():
 	"""class to load airfoil data and return the lift and drag values depending on the angle of attack"""
@@ -55,8 +55,8 @@ class AirFoil():
 
 		#access the data file
 		url = 'http://airfoiltools.com/polar/text?polar=xf-{}-{}'.format(self.foilName,self.reynoldsNumber)
-		with urllib.request.urlopen(url) as webPage:
-			content = webPage.read().splitlines()
+		page = urllib2.urlopen(url)
+                content = page.read().splitlines()
 
 		#set not to record data until certain point
 		record = False

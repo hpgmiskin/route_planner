@@ -8,7 +8,7 @@ class ReportContent(texDocument.TexDocument):
 	"extends TexDocument "
 
 	def __init__(self,arg):
-		super().__init__(arg)
+		super(self.__class__, self).__init__(arg)
 
 	def titlePage(self):
 		print("titlePage")
@@ -580,7 +580,7 @@ class ReportContent(texDocument.TexDocument):
 		self.paragraph("To utilise the path planning component in computing a best estimation of the energy consumed along the path, the energy as a result of turning radius needs to be considered along with that of level and turning flight. The energy consumed in a turn is a result of the severity of the turn and the distance travelled in that turn. The energy model presented in section {} was able to compute the energy cost of navigating a turn at a given radius. The energy consumed was found to have an optimal value where the balance between high force turning angle and long distance turning against drag were at a minimum. For the path planning problem the effect of the turning radius must be considered.".format(self.energyModelSectionRef))
 
 		numberOfNode,maxTurnRadius,flightVelocity = 20,20,10
-		filename = "calculations/dubin_energy_results_{}_{:0.0f}_{:0.0f}".format(numberOfNode,maxTurnRadius,flightVelocity)
+		filename = "calculations/dubin_energy_results_{}_{:0.0f}_{:0.0f}.dat".format(numberOfNode,maxTurnRadius,flightVelocity)
 		data = loadOrRun(filename,calculateDubinEnergyResults,numberOfNode,maxTurnRadius,flightVelocity)
 		turnRadiuses = data["turnRadius"][1:]
 		pathEnergys = data["pathEnergy"][1:]
@@ -595,7 +595,7 @@ class ReportContent(texDocument.TexDocument):
 		numberOfNodes,maxTurnRadius,flightVelocity = [18,20,22],20,10
 		yAxis = {}
 		for numberOfNode in numberOfNodes:
-			filename = "calculations/dubin_energy_results_{}_{:0.0f}_{:0.0f}".format(numberOfNode,maxTurnRadius,flightVelocity)
+			filename = "calculations/dubin_energy_results_{}_{:0.0f}_{:0.0f}.dat".format(numberOfNode,maxTurnRadius,flightVelocity)
 			data = loadOrRun(filename,calculateDubinEnergyResults,numberOfNode,maxTurnRadius,flightVelocity)
 			turnRadiuses = data["turnRadius"]
 			pathEnergys = data["pathEnergy"]
@@ -609,12 +609,15 @@ class ReportContent(texDocument.TexDocument):
 		flightVelocities = numpy.linspace(8,16,5)
 		yAxis,pathEnergy = {},{}
 		for flightVelocity in flightVelocities:
-			filename = "calculations/dubin_energy_results_{}_{:0.0f}_{:0.0f}".format(numberOfNode,maxTurnRadius,flightVelocity)
+			filename = "calculations/dubin_energy_results_{}_{:0.0f}_{:0.0f}.dat".format(numberOfNode,maxTurnRadius,flightVelocity)
 			data = loadOrRun(filename,calculateDubinEnergyResults,numberOfNode,maxTurnRadius,flightVelocity)
 			turnRadiuses = data["turnRadius"]
 			pathEnergys = data["pathEnergy"]
-			pathEnergy[flightVelocity] = pathEnergys
-			yAxis["{} m/s".format(flightVelocity)] = [100*pathEnergy/pathEnergys[1] for pathEnergy in pathEnergys]
+                        #print(type(pathEnergy))
+                        #print(pathEnergy)
+			pathEnergy[str(flightVelocity)] = pathEnergys
+                        #print(type(pathEnergy))
+			yAxis["{} m/s".format(flightVelocity)] = [100*item/pathEnergys[1] for item in pathEnergys]
 		title = "Percentage Path Energy for Route through {} Node Latin Hypercube with Changing Turning Radius and Flight Velocity".format(numberOfNode)
 		filename = plot.line(turnRadiuses,yAxis,title,"Turning Radius $(m)$",r"Energy Percentage $(\%)$",location=2,tight=False)
 		pathVelocityEnergyRef = self.figure(filename,title)

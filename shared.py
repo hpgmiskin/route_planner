@@ -6,7 +6,7 @@ DEBUG = False
 #global variables used in computations
 MAX_LENGTH = 1000
 LOWEST_NODE = 20
-HIGHEST_NODE = 120
+HIGHEST_NODE = 220
 ALL_NODES = list(range(LOWEST_NODE,HIGHEST_NODE+1))
 ALL_BETAS = [round(0.1*item,1) for item in range(1,5)]
 
@@ -47,7 +47,7 @@ def loadOrRun(filename,function,*args):
             openFile.write(json.dumps(data))
     try:
         data = loadJSON(filename)
-    except FileNotFoundError:
+    except IOError:
         data = function(*args)
         saveJSON(filename,data)
 
@@ -93,7 +93,7 @@ def saveData(filename,data):
         except Exception as exception:
             raise ValueError("The function returned a dictionary with values that arent lists {}".format(exception))
 
-    with open(filename, 'w', newline='') as csvfile:
+    with open(filename, 'w') as csvfile:
         csvWriter = csv.writer(csvfile, dialect="excel")
 
         columbNames = []

@@ -3,9 +3,9 @@ import os,re,subprocess
 from string import Template
 
 #use to change between listings and minted code packages
-MINTED = False
+MINTED = True
 
-class TexDocument():
+class TexDocument(object):
 	"Class to write LaTeX documents"
 
 	def __init__(self,filename):
@@ -429,12 +429,10 @@ $listItems
 		#print(reportName,reportDirectory)
 		os.chdir(reportDirectory)
 
-		try:
-			os.unlink("{}.pdf".format(reportName))
-		except PermissionError:
-			os.system("TASKKILL /F /IM AcroRd32.exe")
-		except FileNotFoundError:
-			None
+		# try:
+		# 	os.unlink("{}.pdf".format(reportName))
+		# except IOError:
+		# 	None
 
 		print("Writing LaTeX Document")
 

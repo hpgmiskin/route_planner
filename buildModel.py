@@ -73,7 +73,7 @@ def computeResults(beta,numberNode):
 
 	try:
 		data = loadData(filename)
-	except FileNotFoundError:
+	except IOError:
 		data = {"X":[],"Y":[],"Z":[],"Energy":[]}
 		for testCase in testCases:
 
@@ -214,8 +214,10 @@ def computeAllResults(newSample):
 	filename = "sample_plan.csv"
 	if newSample:
 		data = {
-			"numberNode":[ALL_NODES[i//len(ALL_BETAS)] for i in range(len(ALL_NODES)*len(ALL_BETAS))],
-			"beta":ALL_BETAS*len(ALL_NODES)*len(ALL_BETAS)
+                        "numberNode":ALL_NODES*len(ALL_BETAS)+["END"],
+                        "beta":[ALL_BETAS[i//len(ALL_NODES)] for i in range(len(ALL_NODES)*len(ALL_BETAS))]+["END"]
+			#"numberNode":[ALL_NODES[i//len(ALL_BETAS)] for i in range(len(ALL_NODES)*len(ALL_BETAS))],
+			#"beta":ALL_BETAS*len(ALL_NODES)*len(ALL_BETAS)
 			}
 		saveData(filename,data)
 
@@ -253,4 +255,5 @@ def computeAllResults(newSample):
 
 
 if (__name__ == "__main__"):
-	computeAllResults(True)
+	collectAllResults()
+        #computeAllResults(False)

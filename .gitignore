@@ -2,6 +2,7 @@
 *.csv
 *.xlsm
 *.dat
+*.ods
 
 #Image Files
 *.png
@@ -20,3 +21,8 @@ __pycache__/
 *.blg
 *.aux
 *.synctex.gz
+*.pdf
+
+#Temp Files
+*#
+~*
