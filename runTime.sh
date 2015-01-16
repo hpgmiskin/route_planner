@@ -6,5 +6,5 @@ SCRIPT="private/route_planner/run.sh"
 
 for i in $(seq 20 40); do
     ${SSH} hpm14@ray${i} ${SCRIPT}&
-    #sleep 5s
+    sleep 5s
 done

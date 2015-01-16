@@ -40,6 +40,6 @@ report.documentWriting()
 report.pythonCode()
 
 report.bibliography()
-report.addWordCount(9924)
+report.addWordCount()
 
-report.compile(True)
+# report.compile(True)

@@ -16,9 +16,11 @@ __pycache__/
 *.lof
 *.lot
 *.toc
+*.pyg
 *.tex
 *.log
 *.blg
+*.dvi
 *.aux
 *.synctex.gz
 *.pdf
@@ -26,3 +28,6 @@ __pycache__/
 #Temp Files
 *#
 ~*
+
+#Virtual Environment
+venv/

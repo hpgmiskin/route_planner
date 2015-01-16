@@ -429,6 +429,8 @@ $listItems
 		#print(reportName,reportDirectory)
 		os.chdir(reportDirectory)
 
+		print os.getcwd()
+
 		# try:
 		# 	os.unlink("{}.pdf".format(reportName))
 		# except IOError:
@@ -436,25 +438,25 @@ $listItems
 
 		print("Writing LaTeX Document")
 
-		FNULL = open(os.devnull, 'w')
-		subprocess.call("pdflatex -shell-escape {}.tex".format(reportName),
-			stdout=FNULL)
+		# FNULL = open(os.devnull, 'w')
 
-		subprocess.call("bibtex {}".format(reportName),
-			stdout=FNULL)
+		subprocess.call("pdflatex -shell-escape {}.tex".format(reportName))
+		return
 
-		subprocess.call("pdflatex -shell-escape {}.tex".format(reportName),
-			stdout=FNULL)
+		# , stdout=FNULL)
 
-		subprocess.call("pdflatex -shell-escape {}.tex".format(reportName),
-			stdout=FNULL)
+		subprocess.call("bibtex {}".format(reportName),stdout=FNULL)
 
-		for extension in ["log","aux","toc","bbl","blg","pyg"]:
-			try:
-				os.unlink("{}.{}".format(reportName,extension))
-			except:
-				None
+		subprocess.call("pdflatex -shell-escape {}.tex".format(reportName), stdout=FNULL)
 
-		if show:
-			os.system("start {}.pdf".format(reportName))
-		os.chdir(cwd)
+		subprocess.call("pdflatex -shell-escape {}.tex".format(reportName), stdout=FNULL)
+
+		# for extension in ["log","aux","toc","bbl","blg","pyg"]:
+		# 	try:
+		# 		os.unlink("{}.{}".format(reportName,extension))
+		# 	except:
+		# 		None
+
+		# if show:
+		# 	os.system("start {}.pdf".format(reportName))
+		# os.chdir(cwd)
